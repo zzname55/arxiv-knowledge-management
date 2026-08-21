@@ -4,9 +4,9 @@ QString readingStatusToText(ReadingStatus status)
 {
     switch (status) {
     case ReadingStatus::Noted:              return QStringLiteral("Noted");
-    case ReadingStatus::InProgress:             return QStringLiteral("Wird gelesen");
-    case ReadingStatus::Gelesen:                 return QStringLiteral("Gelesen");
-    case ReadingStatus::ApprovedForTraining: return QStringLiteral("Für Schulung freigegeben");
+    case ReadingStatus::InProgress:             return QStringLiteral("In Progress");
+    case ReadingStatus::Read:                 return QStringLiteral("Read");
+    case ReadingStatus::ApprovedForTraining: return QStringLiteral("Approved for Training");
     case ReadingStatus::Archived:              return QStringLiteral("Archived");
     }
     return QString();
@@ -24,7 +24,7 @@ std::optional<ReadingStatus> readingStatusFromText(const QString &text)
 
 QList<ReadingStatus> allReadingStatuses()
 {
-    return { ReadingStatus::Noted, ReadingStatus::InProgress, ReadingStatus::Gelesen,
+    return { ReadingStatus::Noted, ReadingStatus::InProgress, ReadingStatus::Read,
              ReadingStatus::ApprovedForTraining, ReadingStatus::Archived };
 }
 
@@ -52,5 +52,5 @@ bool isFinalState(ReadingStatus status)
 
 bool requiresRating(ReadingStatus status)
 {
-    return status == ReadingStatus::Gelesen;
+    return status == ReadingStatus::Read;
 }

@@ -40,7 +40,7 @@ QLabel *OverviewView::buildTile(const QString &beschriftung, QWidget *parentWidg
 
 void OverviewView::buildUi()
 {
-    auto *heading = new QLabel(tr("Übersicht"), this);
+    auto *heading = new QLabel(tr("Overview"), this);
     QFont ueberschriftSchrift = heading->font();
     ueberschriftSchrift.setPointSize(ueberschriftSchrift.pointSize() + 2);
     ueberschriftSchrift.setBold(true);
@@ -52,19 +52,19 @@ void OverviewView::buildUi()
     auto *kachelLayout  = new QHBoxLayout(kachelBereich);
     kachelLayout->setContentsMargins(0, 0, 0, 0);
 
-    m_publicationCount = buildTile(tr("Veröffentlichungen"),       kachelBereich);
-    m_readingListCount           = buildTile(tr("Auf meiner readingList"),     kachelBereich);
-    m_approvedCount         = buildTile(tr("Für Schulung freigegeben"), kachelBereich);
+    m_publicationCount = buildTile(tr("Publications"),       kachelBereich);
+    m_readingListCount           = buildTile(tr("On my reading list"),     kachelBereich);
+    m_approvedCount         = buildTile(tr("Approved for training"), kachelBereich);
 
-    m_lastFetchLabel = new QLabel(tr("Zuletzt abgerufen: noch nie"), this);
+    m_lastFetchLabel = new QLabel(tr("Last fetched: never"), this);
     m_lastFetchLabel->setStyleSheet(QStringLiteral("color: #777777;"));
 
     auto *hinweisAutomatik = new QLabel(
-        tr("Die Anwendung ruft zusätzlich täglich um 7:00 Uhr automatisch ab, solange sie geöffnet ist."), this);
+        tr("The application also fetches automatically once a day at 7:00 AM, as long as it is running."), this);
     hinweisAutomatik->setStyleSheet(QStringLiteral("color: #777777;"));
     hinweisAutomatik->setWordWrap(true);
 
-    auto *abrufKnopf = new QPushButton(tr("Jetzt von arXiv aktualisieren"), this);
+    auto *abrufKnopf = new QPushButton(tr("Refresh from arXiv now"), this);
 
     auto *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(heading);
@@ -89,10 +89,10 @@ void OverviewView::setMetrics(int publications, int aufLeseliste, int freigegebe
 
 void OverviewView::setLastFetch(const QString &timestamp)
 {
-    m_lastFetchLabel->setText(tr("Zuletzt abgerufen: %1").arg(timestamp));
+    m_lastFetchLabel->setText(tr("Last fetched: %1").arg(timestamp));
 }
 
 void OverviewView::setGreeting(const QString &displayName)
 {
-    m_greeting->setText(tr("Willkommen, %1.").arg(displayName));
+    m_greeting->setText(tr("Welcome, %1.").arg(displayName));
 }

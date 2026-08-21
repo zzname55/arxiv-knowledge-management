@@ -26,9 +26,9 @@ private slots:
 void TestLesestatus::lesestatusAlsText_liefertDeutscheBezeichnung()
 {
     QCOMPARE(readingStatusToText(ReadingStatus::Noted), QStringLiteral("Noted"));
-    QCOMPARE(readingStatusToText(ReadingStatus::InProgress), QStringLiteral("Wird gelesen"));
-    QCOMPARE(readingStatusToText(ReadingStatus::Gelesen), QStringLiteral("Gelesen"));
-    QCOMPARE(readingStatusToText(ReadingStatus::ApprovedForTraining), QStringLiteral("Für Schulung freigegeben"));
+    QCOMPARE(readingStatusToText(ReadingStatus::InProgress), QStringLiteral("In Progress"));
+    QCOMPARE(readingStatusToText(ReadingStatus::Read), QStringLiteral("Read"));
+    QCOMPARE(readingStatusToText(ReadingStatus::ApprovedForTraining), QStringLiteral("Approved for Training"));
     QCOMPARE(readingStatusToText(ReadingStatus::Archived), QStringLiteral("Archived"));
 }
 
@@ -51,25 +51,25 @@ void TestLesestatus::alleLesestatus_beschreibtDenVollstaendigenProzess()
 void TestLesestatus::istErlaubterUebergang_erlaubtDieSchritteDesProzesses()
 {
     QVERIFY(isAllowedTransition(ReadingStatus::Noted, ReadingStatus::InProgress));
-    QVERIFY(isAllowedTransition(ReadingStatus::InProgress, ReadingStatus::Gelesen));
-    QVERIFY(isAllowedTransition(ReadingStatus::Gelesen, ReadingStatus::ApprovedForTraining));
+    QVERIFY(isAllowedTransition(ReadingStatus::InProgress, ReadingStatus::Read));
+    QVERIFY(isAllowedTransition(ReadingStatus::Read, ReadingStatus::ApprovedForTraining));
     QVERIFY(isAllowedTransition(ReadingStatus::ApprovedForTraining, ReadingStatus::Archived));
 }
 
 void TestLesestatus::istErlaubterUebergang_lehntStatussprungAb()
 {
-    QVERIFY(!isAllowedTransition(ReadingStatus::Noted, ReadingStatus::Gelesen));
+    QVERIFY(!isAllowedTransition(ReadingStatus::Noted, ReadingStatus::Read));
     QVERIFY(!isAllowedTransition(ReadingStatus::Noted, ReadingStatus::ApprovedForTraining));
     QVERIFY(!isAllowedTransition(ReadingStatus::Noted, ReadingStatus::Archived));
     QVERIFY(!isAllowedTransition(ReadingStatus::InProgress, ReadingStatus::ApprovedForTraining));
-    QVERIFY(!isAllowedTransition(ReadingStatus::Gelesen, ReadingStatus::Archived));
+    QVERIFY(!isAllowedTransition(ReadingStatus::Read, ReadingStatus::Archived));
 }
 
 void TestLesestatus::istErlaubterUebergang_lehntRueckwaertsschrittAb()
 {
-    QVERIFY(!isAllowedTransition(ReadingStatus::Gelesen, ReadingStatus::InProgress));
+    QVERIFY(!isAllowedTransition(ReadingStatus::Read, ReadingStatus::InProgress));
     QVERIFY(!isAllowedTransition(ReadingStatus::InProgress, ReadingStatus::Noted));
-    QVERIFY(!isAllowedTransition(ReadingStatus::Archived, ReadingStatus::Gelesen));
+    QVERIFY(!isAllowedTransition(ReadingStatus::Archived, ReadingStatus::Read));
 }
 
 void TestLesestatus::istErlaubterUebergang_lehntUebergangAufSichSelbstAb()
@@ -89,8 +89,8 @@ void TestLesestatus::istErlaubterUebergang_lehntJedenUebergangAusDemEndzustandAb
 void TestLesestatus::naechsterStatus_liefertDenFolgeschritt()
 {
     QCOMPARE(nextStatus(ReadingStatus::Noted).value(), ReadingStatus::InProgress);
-    QCOMPARE(nextStatus(ReadingStatus::InProgress).value(), ReadingStatus::Gelesen);
-    QCOMPARE(nextStatus(ReadingStatus::Gelesen).value(), ReadingStatus::ApprovedForTraining);
+    QCOMPARE(nextStatus(ReadingStatus::InProgress).value(), ReadingStatus::Read);
+    QCOMPARE(nextStatus(ReadingStatus::Read).value(), ReadingStatus::ApprovedForTraining);
     QCOMPARE(nextStatus(ReadingStatus::ApprovedForTraining).value(), ReadingStatus::Archived);
 }
 
@@ -103,12 +103,12 @@ void TestLesestatus::istEndzustand_erkenntArchiviert()
 {
     QVERIFY(isFinalState(ReadingStatus::Archived));
     QVERIFY(!isFinalState(ReadingStatus::Noted));
-    QVERIFY(!isFinalState(ReadingStatus::Gelesen));
+    QVERIFY(!isFinalState(ReadingStatus::Read));
 }
 
 void TestLesestatus::erfordertBewertung_giltNurFuerDenAbschlussDesLesens()
 {
-    QVERIFY(requiresRating(ReadingStatus::Gelesen));
+    QVERIFY(requiresRating(ReadingStatus::Read));
     QVERIFY(!requiresRating(ReadingStatus::Noted));
     QVERIFY(!requiresRating(ReadingStatus::InProgress));
     QVERIFY(!requiresRating(ReadingStatus::ApprovedForTraining));

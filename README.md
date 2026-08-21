@@ -7,6 +7,8 @@ approval for internal training sessions.
 This started as a school project (BWS — "Designing and Developing User Interfaces") and
 is built with C++20 and Qt 6 Widgets.
 
+![Overview page](docs/screenshots/overview.png)
+
 ## What it does
 
 - Fetches the newest publications from the official [arXiv API](https://arxiv.org/help/api)
@@ -60,6 +62,12 @@ ctest --test-dir build --output-on-failure
 
 16 automated test suites cover the model, controller, and an end-to-end acceptance test
 driven against real widgets (no mocked UI layer).
+
+## Screenshots
+
+| Login | Publications | My Reading List |
+|---|---|---|
+| ![Login screen](docs/screenshots/login.png) | ![Publications tab](docs/screenshots/publications.png) | ![My Reading List tab](docs/screenshots/reading_list.png) |
 
 ## Getting started
 

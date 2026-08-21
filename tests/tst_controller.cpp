@@ -316,7 +316,7 @@ void TestController::readingList_reichtDieAblehnungDesModelsWeiter()
     m_leselisteController->approveForTraining(entryId);
 
     QCOMPARE(m_leselistenAnsicht.angezeigterFehler, PermissionService::kMessageNoPermission);
-    QCOMPARE(m_leselistenAnsicht.angezeigteEintraege.at(0).status(), ReadingStatus::Gelesen);
+    QCOMPARE(m_leselistenAnsicht.angezeigteEintraege.at(0).status(), ReadingStatus::Read);
 }
 
 void TestController::readingList_zeigtDemMitarbeiterKeineFremdenEintraege()

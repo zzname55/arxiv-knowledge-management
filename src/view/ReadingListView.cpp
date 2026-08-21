@@ -34,7 +34,7 @@ void ReadingListView::buildUi()
 {
     const bool allLists = (m_mode == Mode::AllLists);
 
-    auto *heading = new QLabel(allLists ? tr("Freigaben — all Leselisten") : tr("Meine readingList"), this);
+    auto *heading = new QLabel(allLists ? tr("Approvals — all reading lists") : tr("My Reading List"), this);
     QFont ueberschriftSchrift = heading->font();
     ueberschriftSchrift.setPointSize(ueberschriftSchrift.pointSize() + 2);
     ueberschriftSchrift.setBold(true);
@@ -45,7 +45,7 @@ void ReadingListView::buildUi()
     if (allLists) {
         spaltenkoepfe << tr("User");
     }
-    spaltenkoepfe << tr("status") << tr("Rating") << tr("Seit");
+    spaltenkoepfe << tr("Status") << tr("Rating") << tr("Since");
 
     m_table = new QTableWidget(0, static_cast<int>(spaltenkoepfe.size()), this);
     m_table->setObjectName(QStringLiteral("leselisteTabelle"));
@@ -73,18 +73,18 @@ void ReadingListView::buildUi()
     auto *knopfleiste = new QHBoxLayout;
 
     if (allLists) {
-        m_approveButton   = new QPushButton(tr("Für Schulung freigeben"), this);
+        m_approveButton   = new QPushButton(tr("Approve for training"), this);
         m_approveButton->setObjectName(QStringLiteral("freigebenKnopf"));
-        m_archiveButton = new QPushButton(tr("Archivieren"), this);
+        m_archiveButton = new QPushButton(tr("Archive"), this);
         m_archiveButton->setObjectName(QStringLiteral("archivierenKnopf"));
         knopfleiste->addWidget(m_approveButton);
         knopfleiste->addWidget(m_archiveButton);
     } else {
-        m_startReadingButton = new QPushButton(tr("Lesen beginnen"), this);
+        m_startReadingButton = new QPushButton(tr("Start reading"), this);
         m_startReadingButton->setObjectName(QStringLiteral("lesenBeginnenKnopf"));
-        m_completeButton  = new QPushButton(tr("Als gelesen markieren"), this);
+        m_completeButton  = new QPushButton(tr("Mark as read"), this);
         m_completeButton->setObjectName(QStringLiteral("abschliessenKnopf"));
-        m_discardButton     = new QPushButton(tr("Verwerfen"), this);
+        m_discardButton     = new QPushButton(tr("Discard"), this);
         m_discardButton->setObjectName(QStringLiteral("verwerfenKnopf"));
         knopfleiste->addWidget(m_startReadingButton);
         knopfleiste->addWidget(m_completeButton);
@@ -95,13 +95,13 @@ void ReadingListView::buildUi()
     auto *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(heading);
     mainLayout->addWidget(m_table, 1);
-    mainLayout->addWidget(new QLabel(tr("Note des Lesers:"), this));
+    mainLayout->addWidget(new QLabel(tr("Reader's note:"), this));
     mainLayout->addWidget(m_noteView);
     mainLayout->addLayout(knopfleiste);
     mainLayout->addWidget(m_messageLabel);
 
     if (!allLists) {
-        auto *hint = new QLabel(tr("hint: Die Freigabe für Schulungen erfolgt durch den KnowledgeManager."), this);
+        auto *hint = new QLabel(tr("Hint: approval for training is done by the Knowledge Manager."), this);
         hint->setStyleSheet(QStringLiteral("color: #777777;"));
         mainLayout->addWidget(hint);
     }
@@ -205,7 +205,7 @@ void ReadingListView::selectionChanged()
         m_discardButton->setEnabled(hatAuswahl && (status == ReadingStatus::Noted || status == ReadingStatus::InProgress));
     }
     if (m_approveButton != nullptr) {
-        m_approveButton->setEnabled(hatAuswahl && status == ReadingStatus::Gelesen);
+        m_approveButton->setEnabled(hatAuswahl && status == ReadingStatus::Read);
     }
     if (m_archiveButton != nullptr) {
         m_archiveButton->setEnabled(hatAuswahl && status == ReadingStatus::ApprovedForTraining);

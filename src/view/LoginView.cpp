@@ -19,7 +19,7 @@ void LoginView::buildUi()
     setWindowTitle(tr("ArxivKnowledgeManagement — Login"));
     setModal(true);
 
-    auto *heading = new QLabel(tr("Wissensmanagement TechnoLab"), this);
+    auto *heading = new QLabel(tr("TechnoLab Knowledge Management"), this);
     QFont ueberschriftSchrift = heading->font();
     ueberschriftSchrift.setPointSize(ueberschriftSchrift.pointSize() + 4);
     ueberschriftSchrift.setBold(true);
@@ -32,7 +32,7 @@ void LoginView::buildUi()
 
     m_usernameField = new QLineEdit(this);
     m_usernameField->setObjectName(QStringLiteral("benutzernameFeld"));
-    m_usernameField->setPlaceholderText(tr("z. B. ma01"));
+    m_usernameField->setPlaceholderText(tr("e.g. ma01"));
 
     m_passwordField = new QLineEdit(this);
     m_passwordField->setObjectName(QStringLiteral("passwortFeld"));
@@ -48,8 +48,8 @@ void LoginView::buildUi()
     m_errorLabel->setWordWrap(true);
     m_errorLabel->setMinimumHeight(32);
 
-    auto *abbrechenKnopf = new QPushButton(tr("Abbrechen"), this);
-    m_loginButton       = new QPushButton(tr("Anmelden"), this);
+    auto *abbrechenKnopf = new QPushButton(tr("Cancel"), this);
+    m_loginButton       = new QPushButton(tr("Login"), this);
     m_loginButton->setObjectName(QStringLiteral("anmeldenKnopf"));
     m_loginButton->setDefault(true);
 

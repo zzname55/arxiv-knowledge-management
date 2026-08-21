@@ -90,7 +90,7 @@ OperationResult ReadingListService::changeStatus(const User &user, int entryId, 
 
 OperationResult ReadingListService::completeReading(const User &user, int entryId, int rating, const QString &note)
 {
-    if (!PermissionService::canSetStatus(user.role(), ReadingStatus::Gelesen)) {
+    if (!PermissionService::canSetStatus(user.role(), ReadingStatus::Read)) {
         return OperationResult::failure(PermissionService::kMessageNoPermission);
     }
 
@@ -99,7 +99,7 @@ OperationResult ReadingListService::completeReading(const User &user, int entryI
     if (!entry.has_value()) {
         return result;
     }
-    if (!isAllowedTransition(entry->status(), ReadingStatus::Gelesen)) {
+    if (!isAllowedTransition(entry->status(), ReadingStatus::Read)) {
         return OperationResult::failure(kMessageInvalidTransition);
     }
     if (rating < kRatingMinimum || rating > kRatingMaximum) {
@@ -112,7 +112,7 @@ OperationResult ReadingListService::completeReading(const User &user, int entryI
     }
 
     ReadingListEntry geaenderterEintrag = *entry;
-    geaenderterEintrag.setzeStatus(ReadingStatus::Gelesen);
+    geaenderterEintrag.setzeStatus(ReadingStatus::Read);
     geaenderterEintrag.setzeBewertung(rating);
     geaenderterEintrag.setzeNotiz(bereinigteNotiz);
     geaenderterEintrag.setzeGeaendertAm(QDateTime::currentDateTimeUtc());

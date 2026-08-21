@@ -292,7 +292,7 @@ void TestAbnahme::t06_veroeffentlichungenErscheinenInDerListe()
     QCOMPARE(tabelle->item(0, 1)->text(), QStringLiteral("ComputerScience"));
 
     auto *trefferAnzeige = finde<QLabel>(m_veroeffentlichungView.get(), QStringLiteral("trefferAnzeige"));
-    QVERIFY(trefferAnzeige->text().contains(QStringLiteral("1 von 1")));
+    QVERIFY(trefferAnzeige->text().contains(QStringLiteral("1 of 1")));
 }
 
 void TestAbnahme::t07_filterNachDisziplinGrenztDieListeEin()
@@ -409,11 +409,11 @@ void TestAbnahme::t13_prozessLaeuftVomVormerkenBisZumArchiv()
     auto *lesenBeginnenKnopf = finde<QPushButton>(m_meineLeselisteView.get(), QStringLiteral("lesenBeginnenKnopf"));
     QVERIFY(lesenBeginnenKnopf->isEnabled());
     QTest::mouseClick(lesenBeginnenKnopf, Qt::LeftButton);
-    QCOMPARE(leselisteTabelle->item(0, 1)->text(), QStringLiteral("Wird gelesen"));
+    QCOMPARE(leselisteTabelle->item(0, 1)->text(), QStringLiteral("In Progress"));
 
     const int entryId = m_readingListService->ownList(m_authentication->currentUser().value()).at(0).id();
     m_meineLeselisteController->completeReading(entryId, 4, QStringLiteral("Für unser Modul relevant."));
-    QCOMPARE(leselisteTabelle->item(0, 1)->text(), QStringLiteral("Gelesen"));
+    QCOMPARE(leselisteTabelle->item(0, 1)->text(), QStringLiteral("Read"));
     QCOMPARE(leselisteTabelle->item(0, 2)->text(), QStringLiteral("4"));
 
     m_anmeldeController->logoutRequested();
@@ -427,7 +427,7 @@ void TestAbnahme::t13_prozessLaeuftVomVormerkenBisZumArchiv()
     auto *freigebenKnopf = finde<QPushButton>(m_freigabenView.get(), QStringLiteral("freigebenKnopf"));
     QVERIFY(freigebenKnopf->isEnabled());
     QTest::mouseClick(freigebenKnopf, Qt::LeftButton);
-    QCOMPARE(freigabenTabelle->item(0, 2)->text(), QStringLiteral("Für Schulung freigegeben"));
+    QCOMPARE(freigabenTabelle->item(0, 2)->text(), QStringLiteral("Approved for Training"));
 
     freigabenTabelle->selectRow(0);
     auto *archivierenKnopf = finde<QPushButton>(m_freigabenView.get(), QStringLiteral("archivierenKnopf"));
@@ -492,7 +492,7 @@ void TestAbnahme::t16_mitarbeiterDarfNichtFreigebenAuchAmModelVorbei()
     const OperationResult result = m_readingListService->changeStatus(mitarbeiter, entryId, ReadingStatus::ApprovedForTraining);
     QVERIFY(!result.successful);
     QCOMPARE(result.errorMessage, PermissionService::kMessageNoPermission);
-    QCOMPARE(m_readingListService->ownList(mitarbeiter).at(0).status(), ReadingStatus::Gelesen);
+    QCOMPARE(m_readingListService->ownList(mitarbeiter).at(0).status(), ReadingStatus::Read);
 }
 
 void TestAbnahme::t17_wissensmanagerGibtFrei()

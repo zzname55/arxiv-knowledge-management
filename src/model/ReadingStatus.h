@@ -13,7 +13,7 @@
 enum class ReadingStatus {
     Noted,
     InProgress,
-    Gelesen,
+    Read,
     ApprovedForTraining,
     Archived
 };

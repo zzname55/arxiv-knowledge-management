@@ -34,7 +34,7 @@ bool PermissionService::canSetStatus(UserRole role, ReadingStatus targetStatus)
     switch (targetStatus) {
     case ReadingStatus::Noted:
     case ReadingStatus::InProgress:
-    case ReadingStatus::Gelesen:
+    case ReadingStatus::Read:
         return true;
     case ReadingStatus::ApprovedForTraining:
         return canApproveForTraining(role);
@@ -52,7 +52,7 @@ bool PermissionService::canEditEntry(const User &user, const ReadingListEntry &e
     if (!canViewAllReadingLists(user.role())) {
         return false;
     }
-    return entry.status() == ReadingStatus::Gelesen || entry.status() == ReadingStatus::ApprovedForTraining;
+    return entry.status() == ReadingStatus::Read || entry.status() == ReadingStatus::ApprovedForTraining;
 }
 
 bool PermissionService::canDeactivateUser(const User &actingUser, int targetUserId)

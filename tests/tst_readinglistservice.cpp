@@ -32,7 +32,7 @@ private slots:
     void lesenAbschliessen_lehntBewertungAusserhalbEinsBisFuenfAb();
     void lesenAbschliessen_lehntLeereNotizAb();
     void lesenAbschliessen_speichertNichtsBeiUngueltigerEingabe();
-    void lesenAbschliessen_lehntAbWennNochNichtGelesenWird();
+    void completeReading_rejectsWhenNotYetInProgress();
 
     void statusWechseln_mitarbeiterDarfNichtFreigeben();
     void statusWechseln_mitarbeiterDarfFremdenEintragNichtAendern();
@@ -198,7 +198,7 @@ void TestLeselisteService::lesenAbschliessen_speichertBewertungUndNotiz()
     QVERIFY(m_service->completeReading(m_mitarbeiter, entryId, 5, QStringLiteral("Sehr gut.")).successful);
 
     const ReadingListEntry entry = m_service->ownList(m_mitarbeiter).at(0);
-    QCOMPARE(entry.status(), ReadingStatus::Gelesen);
+    QCOMPARE(entry.status(), ReadingStatus::Read);
     QCOMPARE(entry.rating().value(), 5);
     QCOMPARE(entry.note(), QStringLiteral("Sehr gut."));
 }
@@ -240,7 +240,7 @@ void TestLeselisteService::lesenAbschliessen_speichertNichtsBeiUngueltigerEingab
     QVERIFY(!entry.rating().has_value());
 }
 
-void TestLeselisteService::lesenAbschliessen_lehntAbWennNochNichtGelesenWird()
+void TestLeselisteService::completeReading_rejectsWhenNotYetInProgress()
 {
     QVERIFY(m_service->addToReadingList(m_mitarbeiter, m_veroeffentlichungId).successful);
     const int entryId = m_service->ownList(m_mitarbeiter).at(0).id();
@@ -257,7 +257,7 @@ void TestLeselisteService::statusWechseln_mitarbeiterDarfNichtFreigeben()
     const OperationResult result = m_service->changeStatus(m_mitarbeiter, entryId, ReadingStatus::ApprovedForTraining);
     QVERIFY(!result.successful);
     QCOMPARE(result.errorMessage, PermissionService::kMessageNoPermission);
-    QCOMPARE(m_service->ownList(m_mitarbeiter).at(0).status(), ReadingStatus::Gelesen);
+    QCOMPARE(m_service->ownList(m_mitarbeiter).at(0).status(), ReadingStatus::Read);
 }
 
 void TestLeselisteService::statusWechseln_mitarbeiterDarfFremdenEintragNichtAendern()

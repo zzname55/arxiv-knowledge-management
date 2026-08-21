@@ -213,9 +213,9 @@ void TestSortierung::readingList_bewertungWirdNumerischSortiert()
 {
     ReadingListView ansicht(ReadingListView::Mode::OwnList);
     ansicht.showEntries({
-        baueEintrag(1, QStringLiteral("Arbeit A"), ReadingStatus::Gelesen, 5),
-        baueEintrag(2, QStringLiteral("Arbeit B"), ReadingStatus::Gelesen, 2),
-        baueEintrag(3, QStringLiteral("Arbeit C"), ReadingStatus::Gelesen, 4)
+        baueEintrag(1, QStringLiteral("Arbeit A"), ReadingStatus::Read, 5),
+        baueEintrag(2, QStringLiteral("Arbeit B"), ReadingStatus::Read, 2),
+        baueEintrag(3, QStringLiteral("Arbeit C"), ReadingStatus::Read, 4)
     });
 
     auto *tabelle = ansicht.findChild<QTableWidget *>(QStringLiteral("leselisteTabelle"));
@@ -230,7 +230,7 @@ void TestSortierung::readingList_eintraegeOhneBewertungStehenAufsteigendVorne()
 {
     ReadingListView ansicht(ReadingListView::Mode::OwnList);
     ansicht.showEntries({
-        baueEintrag(1, QStringLiteral("Bewertet"), ReadingStatus::Gelesen, 3),
+        baueEintrag(1, QStringLiteral("Bewertet"), ReadingStatus::Read, 3),
         baueEintrag(2, QStringLiteral("Ohne Wertung"), ReadingStatus::Noted, std::nullopt)
     });
 

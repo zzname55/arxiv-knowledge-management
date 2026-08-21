@@ -23,7 +23,7 @@ UserManagementView::UserManagementView(QWidget *parentWidget)
 
 void UserManagementView::buildUi()
 {
-    auto *heading = new QLabel(tr("userManagement"), this);
+    auto *heading = new QLabel(tr("User Management"), this);
     QFont ueberschriftSchrift = heading->font();
     ueberschriftSchrift.setPointSize(ueberschriftSchrift.pointSize() + 2);
     ueberschriftSchrift.setBold(true);
@@ -31,7 +31,7 @@ void UserManagementView::buildUi()
 
     m_table = new QTableWidget(0, SpaltenAnzahl, this);
     m_table->setObjectName(QStringLiteral("benutzerTabelle"));
-    m_table->setHorizontalHeaderLabels({ tr("Username"), tr("DisplayName"), tr("Role"), tr("status") });
+    m_table->setHorizontalHeaderLabels({ tr("Username"), tr("DisplayName"), tr("Role"), tr("Status") });
     m_table->horizontalHeader()->setSectionResizeMode(SpalteAnzeigename, QHeaderView::Stretch);
     m_table->verticalHeader()->setVisible(false);
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -44,16 +44,16 @@ void UserManagementView::buildUi()
 
     m_usernameField = new QLineEdit(this);
     m_usernameField->setObjectName(QStringLiteral("neuBenutzernameFeld"));
-    m_usernameField->setPlaceholderText(tr("z. B. ma03"));
+    m_usernameField->setPlaceholderText(tr("e.g. ma03"));
 
     m_displayNameField = new QLineEdit(this);
     m_displayNameField->setObjectName(QStringLiteral("neuAnzeigenameFeld"));
-    m_displayNameField->setPlaceholderText(tr("z. B. Mia Meier"));
+    m_displayNameField->setPlaceholderText(tr("e.g. Mia Meier"));
 
     m_passwordField = new QLineEdit(this);
     m_passwordField->setObjectName(QStringLiteral("neuPasswortFeld"));
     m_passwordField->setEchoMode(QLineEdit::Password);
-    m_passwordField->setPlaceholderText(tr("mindestens %1 Zeichen").arg(UserManagementService::kMinimumPasswordLength));
+    m_passwordField->setPlaceholderText(tr("at least %1 characters").arg(UserManagementService::kMinimumPasswordLength));
 
     m_roleSelector = new QComboBox(this);
     m_roleSelector->setObjectName(QStringLiteral("rollenAuswahl"));
@@ -67,16 +67,16 @@ void UserManagementView::buildUi()
     formular->addRow(tr("Password *"),     m_passwordField);
     formular->addRow(tr("Role *"),        m_roleSelector);
 
-    auto *formularKasten = new QGroupBox(tr("Neuen User anlegen"), this);
+    auto *formularKasten = new QGroupBox(tr("Create New User"), this);
     formularKasten->setLayout(formular);
 
-    m_createButton      = new QPushButton(tr("Anlegen"), this);
+    m_createButton      = new QPushButton(tr("Create"), this);
     m_createButton->setObjectName(QStringLiteral("anlegenKnopf"));
-    m_changeRoleButton = new QPushButton(tr("Role ändern"), this);
+    m_changeRoleButton = new QPushButton(tr("Change Role"), this);
     m_changeRoleButton->setObjectName(QStringLiteral("rolleAendernKnopf"));
-    m_deactivateButton = new QPushButton(tr("Deaktivieren"), this);
+    m_deactivateButton = new QPushButton(tr("Deactivate"), this);
     m_deactivateButton->setObjectName(QStringLiteral("deaktivierenKnopf"));
-    m_activateButton   = new QPushButton(tr("Freigeben"), this);
+    m_activateButton   = new QPushButton(tr("Activate"), this);
     m_activateButton->setObjectName(QStringLiteral("aktivierenKnopf"));
 
     auto *knopfleiste = new QHBoxLayout;
@@ -98,7 +98,7 @@ void UserManagementView::buildUi()
     mainLayout->addLayout(knopfleiste);
     mainLayout->addWidget(m_messageLabel);
 
-    auto *pflichtfeldHinweis = new QLabel(tr("* Pflichtfeld"), this);
+    auto *pflichtfeldHinweis = new QLabel(tr("* Required field"), this);
     pflichtfeldHinweis->setStyleSheet(QStringLiteral("color: #777777;"));
     mainLayout->addWidget(pflichtfeldHinweis);
 
@@ -173,7 +173,7 @@ void UserManagementView::showUsers(const QList<User> &userList)
                                                            static_cast<int>(allRoles().indexOf(user.role()))));
 
         m_table->setItem(row, SpalteStatus,
-                           new SortableTableItem(user.isActive() ? tr("Aktiv") : tr("Gesperrt"),
+                           new SortableTableItem(user.isActive() ? tr("Active") : tr("Locked"),
                                                            user.isActive() ? 1 : 0));
     }
 

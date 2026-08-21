@@ -17,10 +17,10 @@ CompleteReadingDialog::CompleteReadingDialog(const QString &title, QWidget *pare
 
 void CompleteReadingDialog::buildUi(const QString &title)
 {
-    setWindowTitle(tr("Lesen abschließen"));
+    setWindowTitle(tr("Complete Reading"));
     setModal(true);
 
-    auto *titelBezeichnung = new QLabel(tr("Veröffentlichung"), this);
+    auto *titelBezeichnung = new QLabel(tr("Publication"), this);
     auto *titelAnzeige     = new QLabel(title, this);
     titelAnzeige->setWordWrap(true);
     QFont titelSchrift = titelAnzeige->font();
@@ -30,7 +30,7 @@ void CompleteReadingDialog::buildUi(const QString &title)
     m_bewertungFeld = new QSpinBox(this);
     m_bewertungFeld->setRange(ReadingListService::kRatingMinimum, ReadingListService::kRatingMaximum);
     m_bewertungFeld->setValue(ReadingListService::kRatingMinimum + 2);
-    m_bewertungFeld->setSuffix(tr("   (1 = gering, 5 = hoch)"));
+    m_bewertungFeld->setSuffix(tr("   (1 = low, 5 = high)"));
 
     auto *bewertungZeile = new QHBoxLayout;
     bewertungZeile->addWidget(new QLabel(tr("Rating *"), this));
@@ -38,7 +38,7 @@ void CompleteReadingDialog::buildUi(const QString &title)
     bewertungZeile->addStretch();
 
     m_notizFeld = new QPlainTextEdit(this);
-    m_notizFeld->setPlaceholderText(tr("Wofür ist diese Veröffentlichung im Betrieb nützlich?"));
+    m_notizFeld->setPlaceholderText(tr("What is this publication useful for at work?"));
     m_notizFeld->setMinimumHeight(90);
 
     m_errorLabel = new QLabel(this);
@@ -46,12 +46,12 @@ void CompleteReadingDialog::buildUi(const QString &title)
     m_errorLabel->setWordWrap(true);
     m_errorLabel->setMinimumHeight(28);
 
-    auto *abbrechenKnopf = new QPushButton(tr("Abbrechen"), this);
-    auto *speichernKnopf = new QPushButton(tr("Speichern"), this);
+    auto *abbrechenKnopf = new QPushButton(tr("Cancel"), this);
+    auto *speichernKnopf = new QPushButton(tr("Save"), this);
     speichernKnopf->setDefault(true);
 
     auto *knopfleiste = new QHBoxLayout;
-    knopfleiste->addWidget(new QLabel(tr("* Pflichtfeld"), this));
+    knopfleiste->addWidget(new QLabel(tr("* Required field"), this));
     knopfleiste->addStretch();
     knopfleiste->addWidget(abbrechenKnopf);
     knopfleiste->addWidget(speichernKnopf);

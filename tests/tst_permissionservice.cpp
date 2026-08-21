@@ -18,7 +18,7 @@ private slots:
     void darfArchivieren_nichtFuerMitarbeiter();
     void darfBenutzerVerwalten_nurAdministrator();
     void darfBenutzerVerwalten_nichtFuerWissensmanager();
-    void darfStatusSetzen_mitarbeiterBisEinschliesslichGelesen();
+    void employeeMaySetStatusUpToRead();
     void darfStatusSetzen_mitarbeiterNichtDarueberHinaus();
     void darfStatusSetzen_wissensmanagerAuchDieFreigabeschritte();
     void darfEintragBearbeiten_erlaubtDemBesitzer();
@@ -99,10 +99,10 @@ void TestPermissionService::darfBenutzerVerwalten_nichtFuerWissensmanager()
     QVERIFY(!PermissionService::canManageUsers(UserRole::Employee));
 }
 
-void TestPermissionService::darfStatusSetzen_mitarbeiterBisEinschliesslichGelesen()
+void TestPermissionService::employeeMaySetStatusUpToRead()
 {
     QVERIFY(PermissionService::canSetStatus(UserRole::Employee, ReadingStatus::InProgress));
-    QVERIFY(PermissionService::canSetStatus(UserRole::Employee, ReadingStatus::Gelesen));
+    QVERIFY(PermissionService::canSetStatus(UserRole::Employee, ReadingStatus::Read));
 }
 
 void TestPermissionService::darfStatusSetzen_mitarbeiterNichtDarueberHinaus()
@@ -134,7 +134,7 @@ void TestPermissionService::darfEintragBearbeiten_verbietetFremdeEintraege()
 void TestPermissionService::darfEintragBearbeiten_erlaubtDemWissensmanagerDieFreigabeschritte()
 {
     const User wissensmanager = benutzerMitRolle(UserRole::KnowledgeManager, 9);
-    QVERIFY(PermissionService::canEditEntry(wissensmanager, eintragVon(1, ReadingStatus::Gelesen)));
+    QVERIFY(PermissionService::canEditEntry(wissensmanager, eintragVon(1, ReadingStatus::Read)));
     QVERIFY(PermissionService::canEditEntry(wissensmanager, eintragVon(1, ReadingStatus::ApprovedForTraining)));
     QVERIFY(!PermissionService::canEditEntry(wissensmanager, eintragVon(1, ReadingStatus::InProgress)));
     QVERIFY(!PermissionService::canEditEntry(wissensmanager, eintragVon(1, ReadingStatus::Noted)));

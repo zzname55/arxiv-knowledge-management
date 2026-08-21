@@ -38,7 +38,7 @@ void PublicationView::buildUi()
         m_disciplineSelector->addItem(disciplineToText(discipline), QVariant::fromValue(static_cast<int>(discipline)));
     }
 
-    m_refreshButton = new QPushButton(tr("Von arXiv aktualisieren"), this);
+    m_refreshButton = new QPushButton(tr("Refresh from arXiv"), this);
 
     auto *filterleiste = new QHBoxLayout;
     filterleiste->addWidget(new QLabel(tr("Discipline:"), this));
@@ -55,7 +55,7 @@ void PublicationView::buildUi()
 
     m_table = new QTableWidget(0, SpaltenAnzahl, this);
     m_table->setObjectName(QStringLiteral("veroeffentlichungTabelle"));
-    m_table->setHorizontalHeaderLabels({ tr("Title"), tr("Discipline"), tr("Veröffentlicht") });
+    m_table->setHorizontalHeaderLabels({ tr("Title"), tr("Discipline"), tr("Published") });
     m_table->horizontalHeader()->setSectionResizeMode(SpalteTitel, QHeaderView::Stretch);
     m_table->horizontalHeader()->setSectionResizeMode(SpalteDisziplin, QHeaderView::ResizeToContents);
     m_table->horizontalHeader()->setSectionResizeMode(SpalteDatum, QHeaderView::ResizeToContents);
@@ -72,7 +72,7 @@ void PublicationView::buildUi()
     m_detailView->setObjectName(QStringLiteral("detailAnzeige"));
     m_detailView->setOpenExternalLinks(true);
 
-    m_addToReadingListButton = new QPushButton(tr("Auf readingList setzen"), this);
+    m_addToReadingListButton = new QPushButton(tr("Add to reading list"), this);
     m_addToReadingListButton->setObjectName(QStringLiteral("leselisteKnopf"));
     m_addToReadingListButton->setEnabled(false);
 
@@ -160,7 +160,7 @@ void PublicationView::showPublications(const QList<Publication> &publications)
 
 void PublicationView::showResultCount(int displayed, int total)
 {
-    m_resultCountLabel->setText(tr("Anzeige: %1 von %2 Veröffentlichungen").arg(displayed).arg(total));
+    m_resultCountLabel->setText(tr("Showing: %1 of %2 publications").arg(displayed).arg(total));
 }
 
 void PublicationView::showHint(const QString &message)
@@ -178,11 +178,11 @@ void PublicationView::showError(const QString &message)
 void PublicationView::showLoadingIndicator(bool visible)
 {
     m_refreshButton->setEnabled(!visible);
-    m_refreshButton->setText(visible ? tr("Wird geladen …") : tr("Von arXiv aktualisieren"));
+    m_refreshButton->setText(visible ? tr("Loading …") : tr("Refresh from arXiv"));
 
     if (visible) {
         m_hintLabel->setStyleSheet(QStringLiteral("color: #555555;"));
-        m_hintLabel->setText(tr("Veröffentlichungen werden von arXiv abgerufen …"));
+        m_hintLabel->setText(tr("Fetching publications from arXiv …"));
     }
 }
 
@@ -198,7 +198,7 @@ void PublicationView::selectionChanged()
 
 void PublicationView::clearDetailView()
 {
-    m_detailView->setHtml(QStringLiteral("<p style='color:#777777'>%1</p>").arg(tr("Bitte eine Veröffentlichung auswählen.")));
+    m_detailView->setHtml(QStringLiteral("<p style='color:#777777'>%1</p>").arg(tr("Please select a publication.")));
     m_addToReadingListButton->setEnabled(false);
 }
 
@@ -215,9 +215,9 @@ void PublicationView::showDetails(const Publication &publication)
              publication.authorsAsText().toHtmlEscaped(),
              tr("Discipline:"),
              disciplineToText(publication.discipline()),
-             tr("Veröffentlicht:"),
+             tr("Published:"),
              toLocalTime(publication.publishedAt()),
-             tr("arXiv-ID:"),
+             tr("arXiv ID:"),
              publication.arxivId().toHtmlEscaped())
         .arg(tr("Summary"),
              publication.summary().toHtmlEscaped(),
