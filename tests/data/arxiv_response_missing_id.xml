@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:arxiv="http://arxiv.org/schemas/atom">
+  <entry>
+    <title>Eintrag ohne Kennung</title>
+    <summary>Fehlt.</summary>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2608.05678v1</id>
+    <published>2026-08-13T11:00:00Z</published>
+    <title>Vollstaendiger Eintrag</title>
+    <summary>Vorhanden.</summary>
+    <author>
+      <name>Maryam Mirzakhani</name>
+    </author>
+    <arxiv:primary_category xmlns:arxiv="http://arxiv.org/schemas/atom" term="math.NT" scheme="http://arxiv.org/schemas/atom"/>
+  </entry>
+</feed>

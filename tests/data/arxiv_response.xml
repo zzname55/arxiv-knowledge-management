@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:arxiv="http://arxiv.org/schemas/atom">
+  <title type="html">ArXiv Query</title>
+  <id>http://arxiv.org/api/beispiel</id>
+  <updated>2026-08-14T00:00:00-04:00</updated>
+  <entry>
+    <id>http://arxiv.org/abs/2608.01234v2</id>
+    <updated>2026-08-14T09:30:00Z</updated>
+    <published>2026-08-14T08:15:00Z</published>
+    <title>Effiziente Aufmerksamkeitsmechanismen
+  fuer lange Sequenzen</title>
+    <summary>  Wir stellen ein Verfahren vor, das den Speicherbedarf
+von Aufmerksamkeitsmechanismen deutlich senkt.
+</summary>
+    <author>
+      <name>Ashish Vaswani</name>
+    </author>
+    <author>
+      <name>Noam Shazeer</name>
+    </author>
+    <link href="http://arxiv.org/abs/2608.01234v2" rel="alternate" type="text/html"/>
+    <link title="pdf" href="http://arxiv.org/pdf/2608.01234v2" rel="related" type="application/pdf"/>
+    <arxiv:primary_category xmlns:arxiv="http://arxiv.org/schemas/atom" term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2608.05678v1</id>
+    <updated>2026-08-13T11:00:00Z</updated>
+    <published>2026-08-13T11:00:00Z</published>
+    <title>On the Distribution of Prime Gaps</title>
+    <summary>A new bound is established.</summary>
+    <author>
+      <name>Maryam Mirzakhani</name>
+    </author>
+    <link href="http://arxiv.org/abs/2608.05678v1" rel="alternate" type="text/html"/>
+    <arxiv:primary_category xmlns:arxiv="http://arxiv.org/schemas/atom" term="math.NT" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="math.NT" scheme="http://arxiv.org/schemas/atom"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2608.09999v1</id>
+    <updated>2026-08-12T07:45:00Z</updated>
+    <published>2026-08-12T07:45:00Z</published>
+    <title>Quantum Decoherence in Cold Atom Traps</title>
+    <summary>Measurements are reported.</summary>
+    <author>
+      <name>Anton Zeilinger</name>
+    </author>
+    <link href="http://arxiv.org/abs/2608.09999v1" rel="alternate" type="text/html"/>
+    <arxiv:primary_category xmlns:arxiv="http://arxiv.org/schemas/atom" term="quant-ph" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="quant-ph" scheme="http://arxiv.org/schemas/atom"/>
+  </entry>
+</feed>
