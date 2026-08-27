@@ -151,6 +151,7 @@ int main(int argc, char *argv[])
         };
 
         QObject::connect(&publicationView, &PublicationView::fetchRequested, &publicationView, [&]() {
+            overviewView.setLoading(true);
             publicationController.fetchRequested();
         });
         QObject::connect(&publicationView, &PublicationView::disciplineSelected, &publicationView, [&](Discipline discipline) {
@@ -163,18 +164,35 @@ int main(int argc, char *argv[])
                          });
 
         QObject::connect(&overviewView, &OverviewView::fetchRequested, &overviewView, [&]() {
+            overviewView.setLoading(true);
             publicationController.fetchRequested();
         });
 
         // Automatic daily fetch (US-09): triggers the exact same controller
         // path as the manual button.
         QObject::connect(&arxivScheduler, &ArxivScheduler::automaticFetchDue, &publicationView, [&]() {
+            overviewView.setLoading(true);
             publicationController.fetchRequested();
         });
 
-        QObject::connect(&arxivClient, &ArxivClient::publicationsReceived, &overviewView, [&]() {
+        QObject::connect(&arxivClient, &ArxivClient::publicationsReceived, &overviewView, [&](const QList<Publication> &publications) {
+            overviewView.setLoading(false);
             showLastFetch();
             refreshOverview();
+            overviewView.showMessage(
+                publications.isEmpty()
+                    ? QObject::tr("arXiv returned no publications.")
+                    : QObject::tr("Fetched from arXiv: %1 publications (already-known ones are not saved twice).").arg(publications.size()),
+                false);
+        });
+
+        // Without this connection, a network error stayed invisible on the
+        // Overview page when the fetch was triggered from there: it was
+        // previously only reported to the (possibly not currently visible)
+        // Publications view.
+        QObject::connect(&arxivClient, &ArxivClient::fetchFailed, &overviewView, [&](const QString &message) {
+            overviewView.setLoading(false);
+            overviewView.showMessage(message, true);
         });
 
         QObject::connect(&ownReadingListView, &ReadingListView::startReadingRequested, &ownReadingListView, [&](int entryId) {

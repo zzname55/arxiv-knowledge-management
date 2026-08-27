@@ -64,7 +64,11 @@ void OverviewView::buildUi()
     hinweisAutomatik->setStyleSheet(QStringLiteral("color: #777777;"));
     hinweisAutomatik->setWordWrap(true);
 
-    auto *fetchButton = new QPushButton(tr("Refresh from arXiv now"), this);
+    m_fetchButton = new QPushButton(tr("Refresh from arXiv now"), this);
+
+    m_messageLabel = new QLabel(this);
+    m_messageLabel->setWordWrap(true);
+    m_messageLabel->setMinimumHeight(24);
 
     auto *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(heading);
@@ -74,10 +78,26 @@ void OverviewView::buildUi()
     mainLayout->addSpacing(12);
     mainLayout->addWidget(m_lastFetchLabel);
     mainLayout->addWidget(hinweisAutomatik);
-    mainLayout->addWidget(fetchButton, 0, Qt::AlignLeft);
+    mainLayout->addWidget(m_fetchButton, 0, Qt::AlignLeft);
+    mainLayout->addWidget(m_messageLabel);
     mainLayout->addStretch();
 
-    connect(fetchButton, &QPushButton::clicked, this, &OverviewView::fetchRequested);
+    connect(m_fetchButton, &QPushButton::clicked, this, &OverviewView::fetchRequested);
+}
+
+void OverviewView::setLoading(bool loading)
+{
+    m_fetchButton->setEnabled(!loading);
+    m_fetchButton->setText(loading ? tr("Loading …") : tr("Refresh from arXiv now"));
+    if (loading) {
+        m_messageLabel->clear();
+    }
+}
+
+void OverviewView::showMessage(const QString &message, bool isError)
+{
+    m_messageLabel->setStyleSheet(isError ? QStringLiteral("color: #b00020;") : QStringLiteral("color: #1b5e20;"));
+    m_messageLabel->setText(message);
 }
 
 void OverviewView::setMetrics(int publications, int aufLeseliste, int freigegeben)
