@@ -40,12 +40,12 @@ void PublicationView::buildUi()
 
     m_refreshButton = new QPushButton(tr("Refresh from arXiv"), this);
 
-    auto *filterleiste = new QHBoxLayout;
-    filterleiste->addWidget(new QLabel(tr("Discipline:"), this));
-    filterleiste->addWidget(m_disciplineSelector);
-    filterleiste->addSpacing(16);
-    filterleiste->addWidget(m_refreshButton);
-    filterleiste->addStretch();
+    auto *filterBar = new QHBoxLayout;
+    filterBar->addWidget(new QLabel(tr("Discipline:"), this));
+    filterBar->addWidget(m_disciplineSelector);
+    filterBar->addSpacing(16);
+    filterBar->addWidget(m_refreshButton);
+    filterBar->addStretch();
 
     m_resultCountLabel = new QLabel(this);
     m_resultCountLabel->setObjectName(QStringLiteral("trefferAnzeige"));
@@ -89,7 +89,7 @@ void PublicationView::buildUi()
     aufteilung->setStretchFactor(1, 2);
 
     auto *mainLayout = new QVBoxLayout(this);
-    mainLayout->addLayout(filterleiste);
+    mainLayout->addLayout(filterBar);
     mainLayout->addWidget(m_resultCountLabel);
     mainLayout->addWidget(m_hintLabel);
     mainLayout->addWidget(aufteilung, 1);
@@ -116,13 +116,13 @@ const Publication *PublicationView::selectedPublication() const
     if (row < 0) {
         return nullptr;
     }
-    const QTableWidgetItem *ersteZelle = m_table->item(row, SpalteTitel);
-    if (ersteZelle == nullptr) {
+    const QTableWidgetItem *firstCell = m_table->item(row, SpalteTitel);
+    if (firstCell == nullptr) {
         return nullptr;
     }
-    const int gesuchteId = ersteZelle->data(kDatensatzIdRolle).toInt();
+    const int wantedId = firstCell->data(kDatensatzIdRolle).toInt();
     for (const Publication &publication : m_displayedPublications) {
-        if (publication.id() == gesuchteId) {
+        if (publication.id() == wantedId) {
             return &publication;
         }
     }
@@ -133,7 +133,7 @@ void PublicationView::showPublications(const QList<Publication> &publications)
 {
     m_displayedPublications = publications;
 
-    const bool sortierungWarAn = m_table->isSortingEnabled();
+    const bool sortingWasEnabled = m_table->isSortingEnabled();
     m_table->setSortingEnabled(false);
 
     m_table->setRowCount(static_cast<int>(publications.size()));
@@ -141,9 +141,9 @@ void PublicationView::showPublications(const QList<Publication> &publications)
     for (int row = 0; row < publications.size(); ++row) {
         const Publication &publication = publications.at(row);
 
-        auto *titelZelle = new SortableTableItem(publication.title(), publication.title());
-        titelZelle->setData(kDatensatzIdRolle, publication.id());
-        m_table->setItem(row, SpalteTitel, titelZelle);
+        auto *titleCell = new SortableTableItem(publication.title(), publication.title());
+        titleCell->setData(kDatensatzIdRolle, publication.id());
+        m_table->setItem(row, SpalteTitel, titleCell);
 
         m_table->setItem(row, SpalteDisziplin,
                            new SortableTableItem(disciplineToText(publication.discipline()),
@@ -154,7 +154,7 @@ void PublicationView::showPublications(const QList<Publication> &publications)
                                                            publication.publishedAt()));
     }
 
-    m_table->setSortingEnabled(sortierungWarAn);
+    m_table->setSortingEnabled(sortingWasEnabled);
     clearDetailView();
 }
 

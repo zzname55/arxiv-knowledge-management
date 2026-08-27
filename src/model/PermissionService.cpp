@@ -1,7 +1,7 @@
 #include "model/PermissionService.h"
 
 const QString PermissionService::kMessageNoPermission =
-    QStringLiteral("Sie haben keine Berechtigung für diesen Vorgang.");
+    QStringLiteral("You do not have permission for this action.");
 
 bool PermissionService::canManageOwnReadingList(UserRole role)
 {

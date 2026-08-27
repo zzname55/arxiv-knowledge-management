@@ -38,7 +38,7 @@ public:
     bool save(User &user) override
     {
         if (!user.isPersisted()) {
-            user.setzeId(m_naechsteId++);
+            user.setId(m_naechsteId++);
         }
         m_benutzerNachId.insert(user.id(), user);
         return true;

@@ -4,14 +4,14 @@
 #include "model/PermissionService.h"
 #include "model/PublicationRepository.h"
 
-const QString ReadingListService::kMessageAlreadyOnReadingList = QStringLiteral("Diese Veröffentlichung steht bereits auf Ihrer readingList.");
-const QString ReadingListService::kMessagePublicationUnknown = QStringLiteral("Diese Veröffentlichung ist nicht bekannt.");
-const QString ReadingListService::kMessageEntryUnknown = QStringLiteral("Dieser Leselisteneintrag ist nicht vorhanden.");
-const QString ReadingListService::kMessageInvalidTransition = QStringLiteral("Dieser Schritt ist im Ablauf nicht vorgesehen.");
-const QString ReadingListService::kMessageInvalidRating = QStringLiteral("Bitte eine Rating zwischen 1 und 5 angeben.");
-const QString ReadingListService::kMessageNoteMissing = QStringLiteral("Bitte eine Note eingeben.");
-const QString ReadingListService::kMessageRatingRequired = QStringLiteral("Zum Abschließen des Lesens sind Rating und Note nötig.");
-const QString ReadingListService::kMessageSaveFailed = QStringLiteral("Die Änderung konnte nicht gespeichert werden.");
+const QString ReadingListService::kMessageAlreadyOnReadingList = QStringLiteral("This publication is already on your reading list.");
+const QString ReadingListService::kMessagePublicationUnknown = QStringLiteral("This publication is unknown.");
+const QString ReadingListService::kMessageEntryUnknown = QStringLiteral("This reading list entry does not exist.");
+const QString ReadingListService::kMessageInvalidTransition = QStringLiteral("This step is not allowed in the process.");
+const QString ReadingListService::kMessageInvalidRating = QStringLiteral("Please give a rating between 1 and 5.");
+const QString ReadingListService::kMessageNoteMissing = QStringLiteral("Please enter a note.");
+const QString ReadingListService::kMessageRatingRequired = QStringLiteral("A rating and a note are required to complete reading.");
+const QString ReadingListService::kMessageSaveFailed = QStringLiteral("The change could not be saved.");
 
 ReadingListService::ReadingListService(ReadingListRepository &leselisteRepository, PublicationRepository &veroeffentlichungRepository)
     : m_leselisteRepository(leselisteRepository)
@@ -34,11 +34,11 @@ OperationResult ReadingListService::addToReadingList(const User &user, int publi
     const QDateTime now = QDateTime::currentDateTimeUtc();
 
     ReadingListEntry entry;
-    entry.setzeBenutzerId(user.id());
-    entry.setzeVeroeffentlichungId(publicationId);
-    entry.setzeStatus(ReadingStatus::Noted);
-    entry.setzeErstelltAm(now);
-    entry.setzeGeaendertAm(now);
+    entry.setUserId(user.id());
+    entry.setPublicationId(publicationId);
+    entry.setStatus(ReadingStatus::Noted);
+    entry.setCreatedAt(now);
+    entry.setChangedAt(now);
 
     if (!m_leselisteRepository.save(entry)) {
         return OperationResult::failure(kMessageSaveFailed);
@@ -79,8 +79,8 @@ OperationResult ReadingListService::changeStatus(const User &user, int entryId, 
     }
 
     ReadingListEntry geaenderterEintrag = *entry;
-    geaenderterEintrag.setzeStatus(targetStatus);
-    geaenderterEintrag.setzeGeaendertAm(QDateTime::currentDateTimeUtc());
+    geaenderterEintrag.setStatus(targetStatus);
+    geaenderterEintrag.setChangedAt(QDateTime::currentDateTimeUtc());
 
     if (!m_leselisteRepository.save(geaenderterEintrag)) {
         return OperationResult::failure(kMessageSaveFailed);
@@ -112,10 +112,10 @@ OperationResult ReadingListService::completeReading(const User &user, int entryI
     }
 
     ReadingListEntry geaenderterEintrag = *entry;
-    geaenderterEintrag.setzeStatus(ReadingStatus::Read);
-    geaenderterEintrag.setzeBewertung(rating);
-    geaenderterEintrag.setzeNotiz(bereinigteNotiz);
-    geaenderterEintrag.setzeGeaendertAm(QDateTime::currentDateTimeUtc());
+    geaenderterEintrag.setStatus(ReadingStatus::Read);
+    geaenderterEintrag.setRating(rating);
+    geaenderterEintrag.setNote(bereinigteNotiz);
+    geaenderterEintrag.setChangedAt(QDateTime::currentDateTimeUtc());
 
     if (!m_leselisteRepository.save(geaenderterEintrag)) {
         return OperationResult::failure(kMessageSaveFailed);

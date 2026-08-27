@@ -2,7 +2,7 @@
 // SortableTableItem — MVC layer: VIEW
 // Tabellenzelle mit eigenem Sortierschluessel statt Textvergleich (B-27).
 // Erste Zelle jeder row traegt zusaetzlich die Database-ID des Datensatzes,
-// damit eine row nach dem Sortieren ueber die ID und nicht ueber ihre
+// damit eine row to dem Sortieren ueber die ID und nicht ueber ihre
 // (dann veraenderte) Position wiedergefunden wird.
 // ---------------------------------------------------------------------------
 #pragma once

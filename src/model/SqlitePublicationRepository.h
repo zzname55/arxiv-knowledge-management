@@ -18,7 +18,7 @@ public:
 
     std::optional<Publication> findById(int id) const override;
     std::optional<Publication> findByArxivId(const QString &arxivId) const override;
-    QList<Publication>         findByDiscipline(Discipline discipline, int maxAnzahl = kUnlimited) const override;
+    QList<Publication>         findByDiscipline(Discipline discipline, int maxCount = kUnlimited) const override;
     bool                             save(Publication &publication) override;
     int                              count() const override;
 
@@ -27,7 +27,7 @@ public:
     static const QString kAuthorSeparator;
 
 private:
-    static Publication fromQuery(const QSqlQuery &abfrage);
+    static Publication fromQuery(const QSqlQuery &query);
     bool insert(Publication &publication);
     bool update(const Publication &publication);
 

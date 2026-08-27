@@ -62,19 +62,19 @@ void TestBenutzerrolle::user_istStandardmaessigUngueltig()
 void TestBenutzerrolle::user_haeltDieGesetztenWerte()
 {
     User user;
-    user.setzeId(7);
-    user.setzeBenutzername(QStringLiteral("ma01"));
-    user.setzeAnzeigename(QStringLiteral("Max Mustermann"));
-    user.setzeRolle(UserRole::Employee);
-    user.setzePasswortHash(QStringLiteral("abc"));
-    user.setzeSalt(QStringLiteral("def"));
+    user.setId(7);
+    user.setUsername(QStringLiteral("ma01"));
+    user.setDisplayName(QStringLiteral("Max Mustermann"));
+    user.setRole(UserRole::Employee);
+    user.setPasswordHash(QStringLiteral("abc"));
+    user.setSalt(QStringLiteral("def"));
     user.setActive(false);
 
     QCOMPARE(user.id(), 7);
     QCOMPARE(user.username(), QStringLiteral("ma01"));
     QCOMPARE(user.displayName(), QStringLiteral("Max Mustermann"));
     QCOMPARE(user.role(), UserRole::Employee);
-    QCOMPARE(user.passwortHash(), QStringLiteral("abc"));
+    QCOMPARE(user.passwordHash(), QStringLiteral("abc"));
     QCOMPARE(user.salt(), QStringLiteral("def"));
     QVERIFY(!user.isActive());
     QVERIFY(user.isPersisted());

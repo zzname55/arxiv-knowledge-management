@@ -61,14 +61,14 @@ void UserManagementView::buildUi()
         m_roleSelector->addItem(roleToText(role), QVariant::fromValue(static_cast<int>(role)));
     }
 
-    auto *formular = new QFormLayout;
-    formular->addRow(tr("Username *"), m_usernameField);
-    formular->addRow(tr("DisplayName *"),  m_displayNameField);
-    formular->addRow(tr("Password *"),     m_passwordField);
-    formular->addRow(tr("Role *"),        m_roleSelector);
+    auto *form = new QFormLayout;
+    form->addRow(tr("Username *"), m_usernameField);
+    form->addRow(tr("DisplayName *"),  m_displayNameField);
+    form->addRow(tr("Password *"),     m_passwordField);
+    form->addRow(tr("Role *"),        m_roleSelector);
 
-    auto *formularKasten = new QGroupBox(tr("Create New User"), this);
-    formularKasten->setLayout(formular);
+    auto *formBox = new QGroupBox(tr("Create New User"), this);
+    formBox->setLayout(form);
 
     m_createButton      = new QPushButton(tr("Create"), this);
     m_createButton->setObjectName(QStringLiteral("anlegenKnopf"));
@@ -79,12 +79,12 @@ void UserManagementView::buildUi()
     m_activateButton   = new QPushButton(tr("Activate"), this);
     m_activateButton->setObjectName(QStringLiteral("aktivierenKnopf"));
 
-    auto *knopfleiste = new QHBoxLayout;
-    knopfleiste->addWidget(m_createButton);
-    knopfleiste->addWidget(m_changeRoleButton);
-    knopfleiste->addWidget(m_deactivateButton);
-    knopfleiste->addWidget(m_activateButton);
-    knopfleiste->addStretch();
+    auto *buttonBar = new QHBoxLayout;
+    buttonBar->addWidget(m_createButton);
+    buttonBar->addWidget(m_changeRoleButton);
+    buttonBar->addWidget(m_deactivateButton);
+    buttonBar->addWidget(m_activateButton);
+    buttonBar->addStretch();
 
     m_messageLabel = new QLabel(this);
     m_messageLabel->setObjectName(QStringLiteral("meldungsAnzeige"));
@@ -94,13 +94,13 @@ void UserManagementView::buildUi()
     auto *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(heading);
     mainLayout->addWidget(m_table, 1);
-    mainLayout->addWidget(formularKasten);
-    mainLayout->addLayout(knopfleiste);
+    mainLayout->addWidget(formBox);
+    mainLayout->addLayout(buttonBar);
     mainLayout->addWidget(m_messageLabel);
 
-    auto *pflichtfeldHinweis = new QLabel(tr("* Required field"), this);
-    pflichtfeldHinweis->setStyleSheet(QStringLiteral("color: #777777;"));
-    mainLayout->addWidget(pflichtfeldHinweis);
+    auto *requiredFieldHint = new QLabel(tr("* Required field"), this);
+    requiredFieldHint->setStyleSheet(QStringLiteral("color: #777777;"));
+    mainLayout->addWidget(requiredFieldHint);
 
     connect(m_table, &QTableWidget::itemSelectionChanged, this, &UserManagementView::selectionChanged);
 
@@ -136,13 +136,13 @@ const User *UserManagementView::selectedUser() const
     if (row < 0) {
         return nullptr;
     }
-    const QTableWidgetItem *ersteZelle = m_table->item(row, SpalteBenutzername);
-    if (ersteZelle == nullptr) {
+    const QTableWidgetItem *firstCell = m_table->item(row, SpalteBenutzername);
+    if (firstCell == nullptr) {
         return nullptr;
     }
-    const int gesuchteId = ersteZelle->data(kDatensatzIdRolle).toInt();
+    const int wantedId = firstCell->data(kDatensatzIdRolle).toInt();
     for (const User &user : m_displayedUsers) {
-        if (user.id() == gesuchteId) {
+        if (user.id() == wantedId) {
             return &user;
         }
     }
@@ -153,7 +153,7 @@ void UserManagementView::showUsers(const QList<User> &userList)
 {
     m_displayedUsers = userList;
 
-    const bool sortierungWarAn = m_table->isSortingEnabled();
+    const bool sortingWasEnabled = m_table->isSortingEnabled();
     m_table->setSortingEnabled(false);
 
     m_table->setRowCount(static_cast<int>(userList.size()));
@@ -177,18 +177,18 @@ void UserManagementView::showUsers(const QList<User> &userList)
                                                            user.isActive() ? 1 : 0));
     }
 
-    m_table->setSortingEnabled(sortierungWarAn);
+    m_table->setSortingEnabled(sortingWasEnabled);
     selectionChanged();
 }
 
 void UserManagementView::selectionChanged()
 {
     const User *user = selectedUser();
-    const bool      hatAuswahl = (user != nullptr);
+    const bool      hasSelection = (user != nullptr);
 
-    m_changeRoleButton->setEnabled(hatAuswahl);
-    m_deactivateButton->setEnabled(hatAuswahl && user->isActive());
-    m_activateButton->setEnabled(hatAuswahl && !user->isActive());
+    m_changeRoleButton->setEnabled(hasSelection);
+    m_deactivateButton->setEnabled(hasSelection && user->isActive());
+    m_activateButton->setEnabled(hasSelection && !user->isActive());
 }
 
 void UserManagementView::showMessage(const QString &message)

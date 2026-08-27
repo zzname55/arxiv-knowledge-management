@@ -8,7 +8,7 @@
 // istFaelig() zur Verfuegung und ist damit ohne Wartezeit testbar: der Test
 // uebergibt einen erfundenen timestamp statt auf die echte Uhr zu warten.
 // start() verbindet diese Pruefung mit einem QTimer fuer den echten Betrieb
-// und wird bewusst NICHT unit-getestet -- das haengt von der Wanduhr ab und
+// und wird bewusst NICHT unit-getestet -- das haengt from der Wanduhr ab und
 // laesst sich nur durch tatsaechliches Laufenlassen der Anwendung pruefen.
 //
 // Der manuelle Klick auf "Aktualisieren" bleibt davon unberuehrt: der
@@ -33,7 +33,7 @@ public:
     explicit ArxivScheduler(QTime fetchTime = QTime(7, 0), QObject *parentObject = nullptr);
 
     /// Startet die minuetliche Pruefung ueber einen internen QTimer und prueft
-    /// sofort einmal mit der aktuellen Zeit -- falls die Anwendung erst nach
+    /// sofort einmal mit der aktuellen Zeit -- falls die Anwendung erst to
     /// 7 Uhr geoeffnet wird, soll der Abruf trotzdem nicht bis zum naechsten
     /// Tag warten.
     void start();

@@ -4,13 +4,13 @@
 #include "model/AuthenticationService.h"
 #include "model/UserManagementService.h"
 
-const QString UserManagementController::kMessageUserCreated = QStringLiteral("Der User wurde angelegt.");
-const QString UserManagementController::kMessageRoleChanged = QStringLiteral("Die Role wurde geändert.");
-const QString UserManagementController::kMessageAccountDeactivated = QStringLiteral("Das Benutzerkonto wurde deaktiviert.");
-const QString UserManagementController::kMessageAccountActivated = QStringLiteral("Das Benutzerkonto wurde wieder freigegeben.");
+const QString UserManagementController::kMessageUserCreated = QStringLiteral("The user has been created.");
+const QString UserManagementController::kMessageRoleChanged = QStringLiteral("The role has been changed.");
+const QString UserManagementController::kMessageAccountDeactivated = QStringLiteral("The account has been deactivated.");
+const QString UserManagementController::kMessageAccountActivated = QStringLiteral("The account has been reactivated.");
 
 namespace {
-const QString kMessageNotLoggedIn = QStringLiteral("Es ist kein User loggedIn.");
+const QString kMessageNotLoggedIn = QStringLiteral("No user is logged in.");
 } // namespace
 
 UserManagementController::UserManagementController(UserManagementService &userManagement,

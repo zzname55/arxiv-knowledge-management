@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS user (
     password_hash TEXT    NOT NULL,
     salt          TEXT    NOT NULL,
     role         TEXT    NOT NULL,
-    ist_aktiv     INTEGER NOT NULL DEFAULT 1
+    is_active     INTEGER NOT NULL DEFAULT 1
 )
 )SQL");
 
@@ -27,34 +27,34 @@ CREATE TABLE IF NOT EXISTS publication (
     title              TEXT NOT NULL,
     authors            TEXT NOT NULL,
     summary    TEXT NOT NULL,
-    arxiv_kategorie    TEXT NOT NULL,
+    arxiv_category    TEXT NOT NULL,
     discipline          TEXT NOT NULL,
-    veroeffentlicht_am TEXT NOT NULL,
+    published_at TEXT NOT NULL,
     url                TEXT NOT NULL
 )
 )SQL");
 
 const QString kTabelleLeselisteneintrag = QStringLiteral(R"SQL(
-CREATE TABLE IF NOT EXISTS leselisteneintrag (
+CREATE TABLE IF NOT EXISTS reading_list_entry (
     id                   INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id          INTEGER NOT NULL REFERENCES user(id)          ON DELETE CASCADE,
     publication_id INTEGER NOT NULL REFERENCES publication(id) ON DELETE CASCADE,
     status               TEXT    NOT NULL,
     rating            INTEGER,
     note                TEXT    NOT NULL DEFAULT '',
-    erstellt_am          TEXT    NOT NULL,
-    geaendert_am         TEXT    NOT NULL,
+    created_at          TEXT    NOT NULL,
+    changed_at         TEXT    NOT NULL,
     UNIQUE(user_id, publication_id)
 )
 )SQL");
 
 const QString kIndexVeroeffentlichung = QStringLiteral(
     "CREATE INDEX IF NOT EXISTS idx_publication_discipline_date "
-    "ON publication (discipline, veroeffentlicht_am DESC)");
+    "ON publication (discipline, published_at DESC)");
 
 const QString kIndexLeseliste = QStringLiteral(
     "CREATE INDEX IF NOT EXISTS idx_leselisteneintrag_user "
-    "ON leselisteneintrag (user_id)");
+    "ON reading_list_entry (user_id)");
 
 } // namespace
 
@@ -84,7 +84,7 @@ bool Database::open(const QString &dateipfad)
     database.setDatabaseName(dateipfad);
 
     if (!database.open()) {
-        m_lastError = QStringLiteral("Die Database \"%1\" konnte nicht geoeffnet werden: %2")
+        m_lastError = QStringLiteral("The database \"%1\" could not be opened: %2")
                               .arg(dateipfad, database.lastError().text());
         return false;
     }
@@ -118,8 +118,8 @@ bool Database::createSchema()
         kIndexLeseliste
     };
 
-    for (const QString &anweisung : anweisungen) {
-        if (!execute(anweisung)) {
+    for (const QString &statement : anweisungen) {
+        if (!execute(statement)) {
             return false;
         }
     }
@@ -132,12 +132,12 @@ QString Database::lastError() const
     return m_lastError;
 }
 
-bool Database::execute(const QString &sqlAnweisung)
+bool Database::execute(const QString &sqlStatement)
 {
-    QSqlQuery abfrage(connection());
-    if (!abfrage.exec(sqlAnweisung)) {
+    QSqlQuery query(connection());
+    if (!query.exec(sqlStatement)) {
         m_lastError = QStringLiteral("SQL-Anweisung fehlgeschlagen: %1")
-                              .arg(abfrage.lastError().text());
+                              .arg(query.lastError().text());
         return false;
     }
     return true;

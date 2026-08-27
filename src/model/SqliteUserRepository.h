@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // SqliteUserRepository — MVC layer: MODEL
-// Umsetzung von UserRepository auf SQLite. Nur gebundene Werte, keine
+// Umsetzung from UserRepository auf SQLite. Nur gebundene Werte, keine
 // zusammengesetzten SQL-Strings (Schutz vor SQL-Einschleusung).
 // ---------------------------------------------------------------------------
 #pragma once
@@ -30,7 +30,7 @@ public:
     static const QString kDefaultPassword;
 
 private:
-    static User fromQuery(const QSqlQuery &abfrage);
+    static User fromQuery(const QSqlQuery &query);
     bool insert(User &user);
     bool update(const User &user);
 

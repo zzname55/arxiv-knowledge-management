@@ -28,7 +28,7 @@ QList<Discipline> allDisciplines();
 /// Ordnet eine arXiv-Kategorie ("cs.LG") der Discipline zu; unbekannt -> Other.
 Discipline disciplineFromArxivCategory(const QString &arxivCategory);
 
-/// Baut die Abfrage-URL fuer die arXiv-API, sortiert nach Einreichungsdatum absteigend.
-QUrl buildArxivQueryUrl(Discipline discipline, int maxTreffer);
+/// Baut die Abfrage-URL fuer die arXiv-API, sortiert to Einreichungsdatum absteigend.
+QUrl buildArxivQueryUrl(Discipline discipline, int maxResults);
 
 inline constexpr int kDefaultResultCount = 5;

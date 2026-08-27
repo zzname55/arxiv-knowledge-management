@@ -11,7 +11,7 @@ const QString SqliteUserRepository::kDefaultPassword = QStringLiteral("start1234
 namespace {
 
 const QString kColumns = QStringLiteral(
-    "id, username, displayName, password_hash, salt, role, ist_aktiv");
+    "id, username, displayName, password_hash, salt, role, is_active");
 
 struct Standardkonto {
     QString       username;
@@ -32,21 +32,21 @@ SqliteUserRepository::SqliteUserRepository(Database &database)
 {
 }
 
-User SqliteUserRepository::fromQuery(const QSqlQuery &abfrage)
+User SqliteUserRepository::fromQuery(const QSqlQuery &query)
 {
     User user;
-    user.setzeId(abfrage.value(0).toInt());
-    user.setzeBenutzername(abfrage.value(1).toString());
-    user.setzeAnzeigename(abfrage.value(2).toString());
-    user.setzePasswortHash(abfrage.value(3).toString());
-    user.setzeSalt(abfrage.value(4).toString());
+    user.setId(query.value(0).toInt());
+    user.setUsername(query.value(1).toString());
+    user.setDisplayName(query.value(2).toString());
+    user.setPasswordHash(query.value(3).toString());
+    user.setSalt(query.value(4).toString());
 
-    const std::optional<UserRole> role = roleFromText(abfrage.value(5).toString());
+    const std::optional<UserRole> role = roleFromText(query.value(5).toString());
     if (role.has_value()) {
-        user.setzeRolle(*role);
+        user.setRole(*role);
     }
 
-    user.setActive(abfrage.value(6).toInt() != 0);
+    user.setActive(query.value(6).toInt() != 0);
     return user;
 }
 
@@ -54,30 +54,30 @@ std::optional<User> SqliteUserRepository::findByUsername(const QString &username
 {
     m_lastError.clear();
 
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(QStringLiteral("SELECT %1 FROM user WHERE username = :username").arg(kColumns));
-    abfrage.bindValue(QStringLiteral(":username"), username);
+    QSqlQuery query(m_database.connection());
+    query.prepare(QStringLiteral("SELECT %1 FROM user WHERE username = :username").arg(kColumns));
+    query.bindValue(QStringLiteral(":username"), username);
 
-    if (!abfrage.exec()) {
-        m_lastError = abfrage.lastError().text();
+    if (!query.exec()) {
+        m_lastError = query.lastError().text();
         return std::nullopt;
     }
-    return abfrage.next() ? std::optional<User>(fromQuery(abfrage)) : std::nullopt;
+    return query.next() ? std::optional<User>(fromQuery(query)) : std::nullopt;
 }
 
 std::optional<User> SqliteUserRepository::findById(int id) const
 {
     m_lastError.clear();
 
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(QStringLiteral("SELECT %1 FROM user WHERE id = :id").arg(kColumns));
-    abfrage.bindValue(QStringLiteral(":id"), id);
+    QSqlQuery query(m_database.connection());
+    query.prepare(QStringLiteral("SELECT %1 FROM user WHERE id = :id").arg(kColumns));
+    query.bindValue(QStringLiteral(":id"), id);
 
-    if (!abfrage.exec()) {
-        m_lastError = abfrage.lastError().text();
+    if (!query.exec()) {
+        m_lastError = query.lastError().text();
         return std::nullopt;
     }
-    return abfrage.next() ? std::optional<User>(fromQuery(abfrage)) : std::nullopt;
+    return query.next() ? std::optional<User>(fromQuery(query)) : std::nullopt;
 }
 
 QList<User> SqliteUserRepository::all() const
@@ -85,13 +85,13 @@ QList<User> SqliteUserRepository::all() const
     m_lastError.clear();
     QList<User> userList;
 
-    QSqlQuery abfrage(m_database.connection());
-    if (!abfrage.exec(QStringLiteral("SELECT %1 FROM user ORDER BY username").arg(kColumns))) {
-        m_lastError = abfrage.lastError().text();
+    QSqlQuery query(m_database.connection());
+    if (!query.exec(QStringLiteral("SELECT %1 FROM user ORDER BY username").arg(kColumns))) {
+        m_lastError = query.lastError().text();
         return userList;
     }
-    while (abfrage.next()) {
-        userList.append(fromQuery(abfrage));
+    while (query.next()) {
+        userList.append(fromQuery(query));
     }
     return userList;
 }
@@ -104,51 +104,51 @@ bool SqliteUserRepository::save(User &user)
 
 bool SqliteUserRepository::insert(User &user)
 {
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(QStringLiteral(
-        "INSERT INTO user (username, displayName, password_hash, salt, role, ist_aktiv) "
-        "VALUES (:username, :displayName, :password_hash, :salt, :role, :ist_aktiv)"));
+    QSqlQuery query(m_database.connection());
+    query.prepare(QStringLiteral(
+        "INSERT INTO user (username, displayName, password_hash, salt, role, is_active) "
+        "VALUES (:username, :displayName, :password_hash, :salt, :role, :is_active)"));
 
-    abfrage.bindValue(QStringLiteral(":username"),  user.username());
-    abfrage.bindValue(QStringLiteral(":displayName"),   user.displayName());
-    abfrage.bindValue(QStringLiteral(":password_hash"), user.passwortHash());
-    abfrage.bindValue(QStringLiteral(":salt"),          user.salt());
-    abfrage.bindValue(QStringLiteral(":role"),         roleToText(user.role()));
-    abfrage.bindValue(QStringLiteral(":ist_aktiv"),     user.isActive() ? 1 : 0);
+    query.bindValue(QStringLiteral(":username"),  user.username());
+    query.bindValue(QStringLiteral(":displayName"),   user.displayName());
+    query.bindValue(QStringLiteral(":password_hash"), user.passwordHash());
+    query.bindValue(QStringLiteral(":salt"),          user.salt());
+    query.bindValue(QStringLiteral(":role"),         roleToText(user.role()));
+    query.bindValue(QStringLiteral(":is_active"),     user.isActive() ? 1 : 0);
 
-    if (!abfrage.exec()) {
-        m_lastError = QStringLiteral("Der User \"%1\" konnte nicht angelegt werden: %2")
-                              .arg(user.username(), abfrage.lastError().text());
+    if (!query.exec()) {
+        m_lastError = QStringLiteral("The user \"%1\" could not be created: %2")
+                              .arg(user.username(), query.lastError().text());
         return false;
     }
 
-    user.setzeId(abfrage.lastInsertId().toInt());
+    user.setId(query.lastInsertId().toInt());
     return true;
 }
 
 bool SqliteUserRepository::update(const User &user)
 {
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(QStringLiteral(
+    QSqlQuery query(m_database.connection());
+    query.prepare(QStringLiteral(
         "UPDATE user SET username  = :username, "
         "                    displayName   = :displayName, "
         "                    password_hash = :password_hash, "
         "                    salt          = :salt, "
         "                    role         = :role, "
-        "                    ist_aktiv     = :ist_aktiv "
+        "                    is_active     = :is_active "
         "WHERE id = :id"));
 
-    abfrage.bindValue(QStringLiteral(":username"),  user.username());
-    abfrage.bindValue(QStringLiteral(":displayName"),   user.displayName());
-    abfrage.bindValue(QStringLiteral(":password_hash"), user.passwortHash());
-    abfrage.bindValue(QStringLiteral(":salt"),          user.salt());
-    abfrage.bindValue(QStringLiteral(":role"),         roleToText(user.role()));
-    abfrage.bindValue(QStringLiteral(":ist_aktiv"),     user.isActive() ? 1 : 0);
-    abfrage.bindValue(QStringLiteral(":id"),            user.id());
+    query.bindValue(QStringLiteral(":username"),  user.username());
+    query.bindValue(QStringLiteral(":displayName"),   user.displayName());
+    query.bindValue(QStringLiteral(":password_hash"), user.passwordHash());
+    query.bindValue(QStringLiteral(":salt"),          user.salt());
+    query.bindValue(QStringLiteral(":role"),         roleToText(user.role()));
+    query.bindValue(QStringLiteral(":is_active"),     user.isActive() ? 1 : 0);
+    query.bindValue(QStringLiteral(":id"),            user.id());
 
-    if (!abfrage.exec()) {
-        m_lastError = QStringLiteral("Der User \"%1\" konnte nicht geaendert werden: %2")
-                              .arg(user.username(), abfrage.lastError().text());
+    if (!query.exec()) {
+        m_lastError = QStringLiteral("The user \"%1\" could not be updated: %2")
+                              .arg(user.username(), query.lastError().text());
         return false;
     }
     return true;
@@ -171,11 +171,11 @@ bool SqliteUserRepository::createDefaultUsers()
         const QString salt = PasswordHasher::generateSalt();
 
         User user;
-        user.setzeBenutzername(konto.username);
-        user.setzeAnzeigename(konto.displayName);
-        user.setzeRolle(konto.role);
-        user.setzeSalt(salt);
-        user.setzePasswortHash(PasswordHasher::hash(kDefaultPassword, salt));
+        user.setUsername(konto.username);
+        user.setDisplayName(konto.displayName);
+        user.setRole(konto.role);
+        user.setSalt(salt);
+        user.setPasswordHash(PasswordHasher::hash(kDefaultPassword, salt));
         user.setActive(true);
 
         if (!insert(user)) {

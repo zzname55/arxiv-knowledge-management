@@ -25,7 +25,7 @@ public:
     static const QString kInMemoryPath;
 
 private:
-    bool execute(const QString &sqlAnweisung);
+    bool execute(const QString &sqlStatement);
 
     QString m_connectionName;
     QString m_lastError;

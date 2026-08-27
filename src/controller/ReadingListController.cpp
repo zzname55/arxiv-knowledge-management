@@ -4,14 +4,14 @@
 #include "model/AuthenticationService.h"
 #include "model/ReadingListService.h"
 
-const QString ReadingListController::kMessageAddedToReadingList = QStringLiteral("Die Veröffentlichung steht now auf Ihrer readingList.");
-const QString ReadingListController::kMessageStatusChanged = QStringLiteral("Der Bearbeitungsstand wurde geändert.");
-const QString ReadingListController::kMessageDiscarded = QStringLiteral("Der entry wurde von der readingList entfernt.");
-const QString ReadingListController::kMessageApproved = QStringLiteral("Die Veröffentlichung ist für Schulungen freigegeben.");
-const QString ReadingListController::kMessageArchived = QStringLiteral("Der entry wurde archiviert.");
+const QString ReadingListController::kMessageAddedToReadingList = QStringLiteral("The publication is now on your reading list.");
+const QString ReadingListController::kMessageStatusChanged = QStringLiteral("The processing status has been updated.");
+const QString ReadingListController::kMessageDiscarded = QStringLiteral("The entry has been removed from the reading list.");
+const QString ReadingListController::kMessageApproved = QStringLiteral("The publication has been approved for training.");
+const QString ReadingListController::kMessageArchived = QStringLiteral("The entry has been archived.");
 
 namespace {
-const QString kMessageNotLoggedIn = QStringLiteral("Es ist kein User loggedIn.");
+const QString kMessageNotLoggedIn = QStringLiteral("No user is logged in.");
 } // namespace
 
 ReadingListController::ReadingListController(ReadingListService &leselisteService, AuthenticationService &authentifizierung, ReadingListViewContract &ansicht)

@@ -48,13 +48,13 @@ void OverviewView::buildUi()
 
     m_greeting = new QLabel(this);
 
-    auto *kachelBereich = new QWidget(this);
-    auto *kachelLayout  = new QHBoxLayout(kachelBereich);
+    auto *tileArea = new QWidget(this);
+    auto *kachelLayout  = new QHBoxLayout(tileArea);
     kachelLayout->setContentsMargins(0, 0, 0, 0);
 
-    m_publicationCount = buildTile(tr("Publications"),       kachelBereich);
-    m_readingListCount           = buildTile(tr("On my reading list"),     kachelBereich);
-    m_approvedCount         = buildTile(tr("Approved for training"), kachelBereich);
+    m_publicationCount = buildTile(tr("Publications"),       tileArea);
+    m_readingListCount           = buildTile(tr("On my reading list"),     tileArea);
+    m_approvedCount         = buildTile(tr("Approved for training"), tileArea);
 
     m_lastFetchLabel = new QLabel(tr("Last fetched: never"), this);
     m_lastFetchLabel->setStyleSheet(QStringLiteral("color: #777777;"));
@@ -64,20 +64,20 @@ void OverviewView::buildUi()
     hinweisAutomatik->setStyleSheet(QStringLiteral("color: #777777;"));
     hinweisAutomatik->setWordWrap(true);
 
-    auto *abrufKnopf = new QPushButton(tr("Refresh from arXiv now"), this);
+    auto *fetchButton = new QPushButton(tr("Refresh from arXiv now"), this);
 
     auto *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(heading);
     mainLayout->addWidget(m_greeting);
     mainLayout->addSpacing(12);
-    mainLayout->addWidget(kachelBereich);
+    mainLayout->addWidget(tileArea);
     mainLayout->addSpacing(12);
     mainLayout->addWidget(m_lastFetchLabel);
     mainLayout->addWidget(hinweisAutomatik);
-    mainLayout->addWidget(abrufKnopf, 0, Qt::AlignLeft);
+    mainLayout->addWidget(fetchButton, 0, Qt::AlignLeft);
     mainLayout->addStretch();
 
-    connect(abrufKnopf, &QPushButton::clicked, this, &OverviewView::fetchRequested);
+    connect(fetchButton, &QPushButton::clicked, this, &OverviewView::fetchRequested);
 }
 
 void OverviewView::setMetrics(int publications, int aufLeseliste, int freigegeben)

@@ -73,7 +73,7 @@ private slots:
     void t21_derZeitplanerLoestDenselbenAbrufWieDerManuelleKlickAus();
 
 private:
-    void baueAnwendungAuf();
+    void buildApplication();
     bool meldeAnUeberDieMaske(const QString &username, const QString &password);
     int  legeVeroeffentlichungAn(const QString &arxivId, const QString &title, Discipline discipline);
 
@@ -117,10 +117,10 @@ void TestAbnahme::init()
     m_leselisteRepository         = std::make_unique<SqliteReadingListRepository>(*m_database);
     QVERIFY(m_benutzerRepository->createDefaultUsers());
 
-    baueAnwendungAuf();
+    buildApplication();
 }
 
-void TestAbnahme::baueAnwendungAuf()
+void TestAbnahme::buildApplication()
 {
     m_authentication = std::make_unique<AuthenticationService>(*m_benutzerRepository);
     m_readingListService  = std::make_unique<ReadingListService>(*m_leselisteRepository, *m_veroeffentlichungRepository);
@@ -206,14 +206,14 @@ bool TestAbnahme::meldeAnUeberDieMaske(const QString &username, const QString &p
 int TestAbnahme::legeVeroeffentlichungAn(const QString &arxivId, const QString &title, Discipline discipline)
 {
     Publication v;
-    v.setzeArxivId(arxivId);
-    v.setzeTitel(title);
-    v.setzeAutoren({ QStringLiteral("Ada Lovelace"), QStringLiteral("Alan Turing") });
-    v.setzeZusammenfassung(QStringLiteral("Diese Arbeit beschreibt ein Verfahren zur Beschleunigung."));
-    v.setzeArxivKategorie(QStringLiteral("cs.LG"));
-    v.setzeDisziplin(discipline);
-    v.setzeVeroeffentlichtAm(QDateTime(QDate(2026, 8, 14), QTime(8, 0), QTimeZone::UTC));
-    v.setzeUrl(QStringLiteral("https://arxiv.org/abs/%1").arg(arxivId));
+    v.setArxivId(arxivId);
+    v.setTitle(title);
+    v.setAuthors({ QStringLiteral("Ada Lovelace"), QStringLiteral("Alan Turing") });
+    v.setSummary(QStringLiteral("Diese Arbeit beschreibt ein Verfahren zur Beschleunigung."));
+    v.setArxivCategory(QStringLiteral("cs.LG"));
+    v.setDiscipline(discipline);
+    v.setPublishedAt(QDateTime(QDate(2026, 8, 14), QTime(8, 0), QTimeZone::UTC));
+    v.setUrl(QStringLiteral("https://arxiv.org/abs/%1").arg(arxivId));
     m_veroeffentlichungRepository->save(v);
     return v.id();
 }

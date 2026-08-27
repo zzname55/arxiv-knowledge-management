@@ -27,8 +27,8 @@ public:
     QString lastError() const;
 
 private:
-    static ReadingListEntry fromQuery(const QSqlQuery &abfrage);
-    QList<ReadingListEntry> readList(QSqlQuery &abfrage) const;
+    static ReadingListEntry fromQuery(const QSqlQuery &query);
+    QList<ReadingListEntry> readList(QSqlQuery &query) const;
     bool insert(ReadingListEntry &entry);
     bool update(const ReadingListEntry &entry);
 

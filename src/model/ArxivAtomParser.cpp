@@ -47,17 +47,17 @@ Publication readEntry(QXmlStreamReader &leser)
         const QStringView elementname = leser.name();
 
         if (elementname == kElementId) {
-            publication.setzeArxivId(idFromAddress(leser.readElementText()));
+            publication.setArxivId(idFromAddress(leser.readElementText()));
         } else if (elementname == kElementTitle) {
-            publication.setzeTitel(leser.readElementText().simplified());
+            publication.setTitle(leser.readElementText().simplified());
         } else if (elementname == kElementSummary) {
-            publication.setzeZusammenfassung(leser.readElementText().simplified());
+            publication.setSummary(leser.readElementText().simplified());
         } else if (elementname == kElementPublished) {
-            publication.setzeVeroeffentlichtAm(QDateTime::fromString(leser.readElementText(), Qt::ISODate));
+            publication.setPublishedAt(QDateTime::fromString(leser.readElementText(), Qt::ISODate));
         } else if (elementname == kElementPrimaryCategory) {
             const QString kategorie = leser.attributes().value(kAttributeCategory).toString();
-            publication.setzeArxivKategorie(kategorie);
-            publication.setzeDisziplin(disciplineFromArxivCategory(kategorie));
+            publication.setArxivCategory(kategorie);
+            publication.setDiscipline(disciplineFromArxivCategory(kategorie));
         } else if (elementname == kElementAuthor) {
             while (!leser.atEnd()) {
                 leser.readNext();
@@ -71,10 +71,10 @@ Publication readEntry(QXmlStreamReader &leser)
         }
     }
 
-    publication.setzeAutoren(authors);
+    publication.setAuthors(authors);
 
     if (!publication.arxivId().isEmpty()) {
-        publication.setzeUrl(kArxivPagePrefix + publication.arxivId());
+        publication.setUrl(kArxivPagePrefix + publication.arxivId());
     }
 
     return publication;
@@ -92,7 +92,7 @@ QList<Publication> ArxivAtomParser::parse(const QByteArray &atomAntwort, QString
 
     if (atomAntwort.isEmpty()) {
         if (failure != nullptr) {
-            *failure = QStringLiteral("Von arXiv kam eine leere Antwort. Bitte spaeter erneut versuchen.");
+            *failure = QStringLiteral("arXiv returned an empty response. Please try again later.");
         }
         return publications;
     }
@@ -112,7 +112,7 @@ QList<Publication> ArxivAtomParser::parse(const QByteArray &atomAntwort, QString
 
     if (leser.hasError()) {
         if (failure != nullptr) {
-            *failure = QStringLiteral("Die Antwort von arXiv konnte nicht ausgewertet werden (row %1): %2")
+            *failure = QStringLiteral("The response from arXiv could not be parsed (row %1): %2")
                           .arg(leser.lineNumber())
                           .arg(leser.errorString());
         }

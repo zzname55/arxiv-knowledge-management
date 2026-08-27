@@ -39,11 +39,11 @@ User TestSqliteBenutzerRepository::newUser(const QString &username, UserRole rol
 {
     const QString salt = PasswordHasher::generateSalt();
     User user;
-    user.setzeBenutzername(username);
-    user.setzeAnzeigename(QStringLiteral("DisplayName %1").arg(username));
-    user.setzeSalt(salt);
-    user.setzePasswortHash(PasswordHasher::hash(QStringLiteral("start1234"), salt));
-    user.setzeRolle(role);
+    user.setUsername(username);
+    user.setDisplayName(QStringLiteral("DisplayName %1").arg(username));
+    user.setSalt(salt);
+    user.setPasswordHash(PasswordHasher::hash(QStringLiteral("start1234"), salt));
+    user.setRole(role);
     user.setActive(true);
     return user;
 }
@@ -77,8 +77,8 @@ void TestSqliteBenutzerRepository::speichere_aktualisiertEinenBestehendenBenutze
     QVERIFY(m_repository->save(user));
     const int vergebeneId = user.id();
 
-    user.setzeAnzeigename(QStringLiteral("Neuer Name"));
-    user.setzeRolle(UserRole::KnowledgeManager);
+    user.setDisplayName(QStringLiteral("Neuer Name"));
+    user.setRole(UserRole::KnowledgeManager);
     QVERIFY(m_repository->save(user));
 
     QCOMPARE(user.id(), vergebeneId);
@@ -191,7 +191,7 @@ void TestSqliteBenutzerRepository::legeStandardbenutzerAn_erzeugtDreiKonten()
     QVERIFY(administrator.has_value());
     QCOMPARE(administrator->role(), UserRole::Administrator);
 
-    QVERIFY(PasswordHasher::verify(SqliteUserRepository::kDefaultPassword, mitarbeiter->salt(), mitarbeiter->passwortHash()));
+    QVERIFY(PasswordHasher::verify(SqliteUserRepository::kDefaultPassword, mitarbeiter->salt(), mitarbeiter->passwordHash()));
 }
 
 void TestSqliteBenutzerRepository::legeStandardbenutzerAn_istMehrfachAufrufbar()

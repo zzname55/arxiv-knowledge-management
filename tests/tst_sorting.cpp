@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Test: Sortierung per Spaltenkopf (B-27)
-// Prueft fachlich korrekte Sortierung UND dass die selection nach dem
+// Prueft fachlich korrekte Sortierung UND dass die selection to dem
 // Sortieren noch auf den richtigen Datensatz zeigt (ueber die ID, nicht
 // die Zeilennummer).
 // ---------------------------------------------------------------------------
@@ -39,50 +39,50 @@ private slots:
     void userManagement_auswahlBleibtNachDemSortierenRichtig();
 
 private:
-    static Publication baueVeroeffentlichung(int id, const QString &title, Discipline discipline, const QDate &date);
-    static ReadingListEntry  baueEintrag(int id, const QString &title, ReadingStatus status, std::optional<int> rating);
-    static User          baueBenutzer(int id, const QString &username, UserRole role);
+    static Publication buildPublication(int id, const QString &title, Discipline discipline, const QDate &date);
+    static ReadingListEntry  buildEntry(int id, const QString &title, ReadingStatus status, std::optional<int> rating);
+    static User          buildUser(int id, const QString &username, UserRole role);
     static int zeileMitText(QTableWidget *tabelle, const QString &text);
 };
 
-Publication TestSortierung::baueVeroeffentlichung(int id, const QString &title, Discipline discipline, const QDate &date)
+Publication TestSortierung::buildPublication(int id, const QString &title, Discipline discipline, const QDate &date)
 {
     Publication v;
-    v.setzeId(id);
-    v.setzeArxivId(QStringLiteral("2608.%1").arg(id, 5, 10, QLatin1Char('0')));
-    v.setzeTitel(title);
-    v.setzeAutoren({ QStringLiteral("A. Autorin") });
-    v.setzeZusammenfassung(QStringLiteral("Kurzfassung zu %1.").arg(title));
-    v.setzeArxivKategorie(QStringLiteral("cs.LG"));
-    v.setzeDisziplin(discipline);
-    v.setzeVeroeffentlichtAm(QDateTime(date, QTime(8, 0), QTimeZone::UTC));
-    v.setzeUrl(QStringLiteral("https://arxiv.org/abs/x"));
+    v.setId(id);
+    v.setArxivId(QStringLiteral("2608.%1").arg(id, 5, 10, QLatin1Char('0')));
+    v.setTitle(title);
+    v.setAuthors({ QStringLiteral("A. Autorin") });
+    v.setSummary(QStringLiteral("Kurzfassung zu %1.").arg(title));
+    v.setArxivCategory(QStringLiteral("cs.LG"));
+    v.setDiscipline(discipline);
+    v.setPublishedAt(QDateTime(date, QTime(8, 0), QTimeZone::UTC));
+    v.setUrl(QStringLiteral("https://arxiv.org/abs/x"));
     return v;
 }
 
-ReadingListEntry TestSortierung::baueEintrag(int id, const QString &title, ReadingStatus status, std::optional<int> rating)
+ReadingListEntry TestSortierung::buildEntry(int id, const QString &title, ReadingStatus status, std::optional<int> rating)
 {
     ReadingListEntry entry;
-    entry.setzeId(id);
-    entry.setzeBenutzerId(1);
-    entry.setzeVeroeffentlichungId(id);
-    entry.setzeStatus(status);
-    entry.setzeBewertung(rating);
-    entry.setzeNotiz(QStringLiteral("Note zu %1").arg(title));
-    entry.setzeErstelltAm(QDateTime(QDate(2026, 8, 10), QTime(8, 0), QTimeZone::UTC));
-    entry.setzeGeaendertAm(entry.createdAt());
-    entry.setzeVeroeffentlichungTitel(title);
-    entry.setzeBenutzerAnzeigename(QStringLiteral("Max Mustermann"));
+    entry.setId(id);
+    entry.setUserId(1);
+    entry.setPublicationId(id);
+    entry.setStatus(status);
+    entry.setRating(rating);
+    entry.setNote(QStringLiteral("Note zu %1").arg(title));
+    entry.setCreatedAt(QDateTime(QDate(2026, 8, 10), QTime(8, 0), QTimeZone::UTC));
+    entry.setChangedAt(entry.createdAt());
+    entry.setPublicationTitle(title);
+    entry.setUserDisplayName(QStringLiteral("Max Mustermann"));
     return entry;
 }
 
-User TestSortierung::baueBenutzer(int id, const QString &username, UserRole role)
+User TestSortierung::buildUser(int id, const QString &username, UserRole role)
 {
     User user;
-    user.setzeId(id);
-    user.setzeBenutzername(username);
-    user.setzeAnzeigename(QStringLiteral("Anzeige %1").arg(username));
-    user.setzeRolle(role);
+    user.setId(id);
+    user.setUsername(username);
+    user.setDisplayName(QStringLiteral("Anzeige %1").arg(username));
+    user.setRole(role);
     user.setActive(true);
     return user;
 }
@@ -117,9 +117,9 @@ void TestSortierung::publications_nachTitelSortieren()
 {
     PublicationView ansicht;
     ansicht.showPublications({
-        baueVeroeffentlichung(1, QStringLiteral("Zebra-Verfahren"), Discipline::ComputerScience, QDate(2026, 8, 14)),
-        baueVeroeffentlichung(2, QStringLiteral("Ameisen-Algorithmus"), Discipline::Mathematics, QDate(2026, 8, 13)),
-        baueVeroeffentlichung(3, QStringLiteral("Mittlere Arbeit"), Discipline::Physics, QDate(2026, 8, 12))
+        buildPublication(1, QStringLiteral("Zebra-Verfahren"), Discipline::ComputerScience, QDate(2026, 8, 14)),
+        buildPublication(2, QStringLiteral("Ameisen-Algorithmus"), Discipline::Mathematics, QDate(2026, 8, 13)),
+        buildPublication(3, QStringLiteral("Mittlere Arbeit"), Discipline::Physics, QDate(2026, 8, 12))
     });
 
     auto *tabelle = ansicht.findChild<QTableWidget *>(QStringLiteral("veroeffentlichungTabelle"));
@@ -134,8 +134,8 @@ void TestSortierung::publications_zweiterKlickKehrtDieReihenfolgeUm()
 {
     PublicationView ansicht;
     ansicht.showPublications({
-        baueVeroeffentlichung(1, QStringLiteral("Zebra-Verfahren"), Discipline::ComputerScience, QDate(2026, 8, 14)),
-        baueVeroeffentlichung(2, QStringLiteral("Ameisen-Algorithmus"), Discipline::Mathematics, QDate(2026, 8, 13))
+        buildPublication(1, QStringLiteral("Zebra-Verfahren"), Discipline::ComputerScience, QDate(2026, 8, 14)),
+        buildPublication(2, QStringLiteral("Ameisen-Algorithmus"), Discipline::Mathematics, QDate(2026, 8, 13))
     });
 
     auto *tabelle = ansicht.findChild<QTableWidget *>(QStringLiteral("veroeffentlichungTabelle"));
@@ -149,9 +149,9 @@ void TestSortierung::publications_datumWirdChronologischSortiert()
 {
     PublicationView ansicht;
     ansicht.showPublications({
-        baueVeroeffentlichung(1, QStringLiteral("Neunter"), Discipline::ComputerScience, QDate(2026, 8, 9)),
-        baueVeroeffentlichung(2, QStringLiteral("Zehnter"), Discipline::ComputerScience, QDate(2026, 8, 10)),
-        baueVeroeffentlichung(3, QStringLiteral("Erster im September"), Discipline::ComputerScience, QDate(2026, 9, 1))
+        buildPublication(1, QStringLiteral("Neunter"), Discipline::ComputerScience, QDate(2026, 8, 9)),
+        buildPublication(2, QStringLiteral("Zehnter"), Discipline::ComputerScience, QDate(2026, 8, 10)),
+        buildPublication(3, QStringLiteral("Erster im September"), Discipline::ComputerScience, QDate(2026, 9, 1))
     });
 
     auto *tabelle = ansicht.findChild<QTableWidget *>(QStringLiteral("veroeffentlichungTabelle"));
@@ -166,8 +166,8 @@ void TestSortierung::publications_auswahlZeigtNachDemSortierenDieRichtigeArbeit(
 {
     PublicationView ansicht;
     ansicht.showPublications({
-        baueVeroeffentlichung(1, QStringLiteral("Zebra-Verfahren"), Discipline::ComputerScience, QDate(2026, 8, 14)),
-        baueVeroeffentlichung(2, QStringLiteral("Ameisen-Algorithmus"), Discipline::Mathematics, QDate(2026, 8, 13))
+        buildPublication(1, QStringLiteral("Zebra-Verfahren"), Discipline::ComputerScience, QDate(2026, 8, 14)),
+        buildPublication(2, QStringLiteral("Ameisen-Algorithmus"), Discipline::Mathematics, QDate(2026, 8, 13))
     });
 
     auto *tabelle = ansicht.findChild<QTableWidget *>(QStringLiteral("veroeffentlichungTabelle"));
@@ -185,8 +185,8 @@ void TestSortierung::publications_leselisteKnopfMeldetDieRichtigeArbeit()
 {
     PublicationView ansicht;
     ansicht.showPublications({
-        baueVeroeffentlichung(11, QStringLiteral("Zebra-Verfahren"), Discipline::ComputerScience, QDate(2026, 8, 14)),
-        baueVeroeffentlichung(22, QStringLiteral("Ameisen-Algorithmus"), Discipline::Mathematics, QDate(2026, 8, 13))
+        buildPublication(11, QStringLiteral("Zebra-Verfahren"), Discipline::ComputerScience, QDate(2026, 8, 14)),
+        buildPublication(22, QStringLiteral("Ameisen-Algorithmus"), Discipline::Mathematics, QDate(2026, 8, 13))
     });
 
     auto *tabelle = ansicht.findChild<QTableWidget *>(QStringLiteral("veroeffentlichungTabelle"));
@@ -213,9 +213,9 @@ void TestSortierung::readingList_bewertungWirdNumerischSortiert()
 {
     ReadingListView ansicht(ReadingListView::Mode::OwnList);
     ansicht.showEntries({
-        baueEintrag(1, QStringLiteral("Arbeit A"), ReadingStatus::Read, 5),
-        baueEintrag(2, QStringLiteral("Arbeit B"), ReadingStatus::Read, 2),
-        baueEintrag(3, QStringLiteral("Arbeit C"), ReadingStatus::Read, 4)
+        buildEntry(1, QStringLiteral("Arbeit A"), ReadingStatus::Read, 5),
+        buildEntry(2, QStringLiteral("Arbeit B"), ReadingStatus::Read, 2),
+        buildEntry(3, QStringLiteral("Arbeit C"), ReadingStatus::Read, 4)
     });
 
     auto *tabelle = ansicht.findChild<QTableWidget *>(QStringLiteral("leselisteTabelle"));
@@ -230,8 +230,8 @@ void TestSortierung::readingList_eintraegeOhneBewertungStehenAufsteigendVorne()
 {
     ReadingListView ansicht(ReadingListView::Mode::OwnList);
     ansicht.showEntries({
-        baueEintrag(1, QStringLiteral("Bewertet"), ReadingStatus::Read, 3),
-        baueEintrag(2, QStringLiteral("Ohne Wertung"), ReadingStatus::Noted, std::nullopt)
+        buildEntry(1, QStringLiteral("Bewertet"), ReadingStatus::Read, 3),
+        buildEntry(2, QStringLiteral("Ohne Wertung"), ReadingStatus::Noted, std::nullopt)
     });
 
     auto *tabelle = ansicht.findChild<QTableWidget *>(QStringLiteral("leselisteTabelle"));
@@ -245,8 +245,8 @@ void TestSortierung::readingList_aktionBetrifftNachDemSortierenDenRichtigenEintr
 {
     ReadingListView ansicht(ReadingListView::Mode::OwnList);
     ansicht.showEntries({
-        baueEintrag(11, QStringLiteral("Zebra"), ReadingStatus::Noted, std::nullopt),
-        baueEintrag(22, QStringLiteral("Ameise"), ReadingStatus::Noted, std::nullopt)
+        buildEntry(11, QStringLiteral("Zebra"), ReadingStatus::Noted, std::nullopt),
+        buildEntry(22, QStringLiteral("Ameise"), ReadingStatus::Noted, std::nullopt)
     });
 
     auto *tabelle = ansicht.findChild<QTableWidget *>(QStringLiteral("leselisteTabelle"));
@@ -277,8 +277,8 @@ void TestSortierung::userManagement_auswahlBleibtNachDemSortierenRichtig()
 {
     UserManagementView ansicht;
     ansicht.showUsers({
-        baueBenutzer(11, QStringLiteral("zz01"), UserRole::Employee),
-        baueBenutzer(22, QStringLiteral("aa01"), UserRole::Administrator)
+        buildUser(11, QStringLiteral("zz01"), UserRole::Employee),
+        buildUser(22, QStringLiteral("aa01"), UserRole::Administrator)
     });
 
     auto *tabelle = ansicht.findChild<QTableWidget *>(QStringLiteral("benutzerTabelle"));

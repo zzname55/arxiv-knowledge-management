@@ -4,11 +4,11 @@
 #include "model/PasswordHasher.h"
 
 const QString AuthenticationService::kMessageInvalidCredentials =
-    QStringLiteral("Username oder Password ist falsch.");
+    QStringLiteral("Username or password is incorrect.");
 const QString AuthenticationService::kMessageRequiredFieldMissing =
-    QStringLiteral("Bitte Username und Password eingeben.");
+    QStringLiteral("Please enter a username and password.");
 const QString AuthenticationService::kMessageAccountDeactivated =
-    QStringLiteral("Dieses Benutzerkonto ist deaktiviert.");
+    QStringLiteral("This account is deactivated.");
 
 AuthenticationService::AuthenticationService(UserRepository &repository)
     : m_repository(repository)
@@ -30,7 +30,7 @@ AnmeldeErgebnis AuthenticationService::login(const QString &username, const QStr
         return result;
     }
 
-    if (!PasswordHasher::verify(password, found->salt(), found->passwortHash())) {
+    if (!PasswordHasher::verify(password, found->salt(), found->passwordHash())) {
         result.errorMessage = kMessageInvalidCredentials;
         return result;
     }

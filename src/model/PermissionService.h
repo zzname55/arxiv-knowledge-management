@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // PermissionService — MVC layer: MODEL
-// Umsetzung von mandatory requirement 1.2. Liegt bewusst im Model: die
+// Umsetzung from mandatory requirement 1.2. Liegt bewusst im Model: die
 // Absicherung greift auch, wenn ein Vorgang an der Oberflaeche vorbei
 // triggered wird. Kein Zustand, all Methoden statisch.
 // ---------------------------------------------------------------------------

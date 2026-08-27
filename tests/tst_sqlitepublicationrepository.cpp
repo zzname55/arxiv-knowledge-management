@@ -39,14 +39,14 @@ Publication TestSqliteVeroeffentlichungRepository::neueVeroeffentlichung(
     const QString &arxivId, const QString &title, Discipline discipline, const QDateTime &publishedAt)
 {
     Publication v;
-    v.setzeArxivId(arxivId);
-    v.setzeTitel(title);
-    v.setzeAutoren({ QStringLiteral("A. Autorin"), QStringLiteral("B. Autor") });
-    v.setzeZusammenfassung(QStringLiteral("Kurzfassung zu %1.").arg(title));
-    v.setzeArxivKategorie(QStringLiteral("cs.LG"));
-    v.setzeDisziplin(discipline);
-    v.setzeVeroeffentlichtAm(publishedAt);
-    v.setzeUrl(QStringLiteral("https://arxiv.org/abs/%1").arg(arxivId));
+    v.setArxivId(arxivId);
+    v.setTitle(title);
+    v.setAuthors({ QStringLiteral("A. Autorin"), QStringLiteral("B. Autor") });
+    v.setSummary(QStringLiteral("Kurzfassung zu %1.").arg(title));
+    v.setArxivCategory(QStringLiteral("cs.LG"));
+    v.setDiscipline(discipline);
+    v.setPublishedAt(publishedAt);
+    v.setUrl(QStringLiteral("https://arxiv.org/abs/%1").arg(arxivId));
     return v;
 }
 

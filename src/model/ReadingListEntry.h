@@ -17,34 +17,34 @@ public:
     ReadingListEntry() = default;
 
     int id() const { return m_id; }
-    void setzeId(int id) { m_id = id; }
+    void setId(int id) { m_id = id; }
 
     int userId() const { return m_benutzerId; }
-    void setzeBenutzerId(int userId) { m_benutzerId = userId; }
+    void setUserId(int userId) { m_benutzerId = userId; }
 
     int publicationId() const { return m_veroeffentlichungId; }
-    void setzeVeroeffentlichungId(int id) { m_veroeffentlichungId = id; }
+    void setPublicationId(int id) { m_veroeffentlichungId = id; }
 
     ReadingStatus status() const { return m_status; }
-    void setzeStatus(ReadingStatus status) { m_status = status; }
+    void setStatus(ReadingStatus status) { m_status = status; }
 
     std::optional<int> rating() const { return m_bewertung; }
-    void setzeBewertung(std::optional<int> rating) { m_bewertung = rating; }
+    void setRating(std::optional<int> rating) { m_bewertung = rating; }
 
     QString note() const { return m_notiz; }
-    void setzeNotiz(const QString &note) { m_notiz = note; }
+    void setNote(const QString &note) { m_notiz = note; }
 
     QDateTime createdAt() const { return m_erstelltAm; }
-    void setzeErstelltAm(const QDateTime &timestamp) { m_erstelltAm = timestamp; }
+    void setCreatedAt(const QDateTime &timestamp) { m_erstelltAm = timestamp; }
 
     QDateTime changedAt() const { return m_geaendertAm; }
-    void setzeGeaendertAm(const QDateTime &timestamp) { m_geaendertAm = timestamp; }
+    void setChangedAt(const QDateTime &timestamp) { m_geaendertAm = timestamp; }
 
     QString userDisplayName() const { return m_benutzerAnzeigename; }
-    void setzeBenutzerAnzeigename(const QString &displayName) { m_benutzerAnzeigename = displayName; }
+    void setUserDisplayName(const QString &displayName) { m_benutzerAnzeigename = displayName; }
 
     QString publicationTitle() const { return m_veroeffentlichungTitel; }
-    void setzeVeroeffentlichungTitel(const QString &title) { m_veroeffentlichungTitel = title; }
+    void setPublicationTitle(const QString &title) { m_veroeffentlichungTitel = title; }
 
     bool isPersisted() const { return m_id != kNoId; }
 

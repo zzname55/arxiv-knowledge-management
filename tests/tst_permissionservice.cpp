@@ -36,9 +36,9 @@ private:
 User TestPermissionService::benutzerMitRolle(UserRole role, int id)
 {
     User user;
-    user.setzeId(id);
-    user.setzeBenutzername(QStringLiteral("nutzer%1").arg(id));
-    user.setzeRolle(role);
+    user.setId(id);
+    user.setUsername(QStringLiteral("nutzer%1").arg(id));
+    user.setRole(role);
     user.setActive(true);
     return user;
 }
@@ -46,10 +46,10 @@ User TestPermissionService::benutzerMitRolle(UserRole role, int id)
 ReadingListEntry TestPermissionService::eintragVon(int userId, ReadingStatus status)
 {
     ReadingListEntry entry;
-    entry.setzeId(100);
-    entry.setzeBenutzerId(userId);
-    entry.setzeVeroeffentlichungId(200);
-    entry.setzeStatus(status);
+    entry.setId(100);
+    entry.setUserId(userId);
+    entry.setPublicationId(200);
+    entry.setStatus(status);
     return entry;
 }
 
@@ -159,7 +159,7 @@ void TestPermissionService::message_istFuerDenBenutzerVerstaendlich()
 {
     const QString message = PermissionService::kMessageNoPermission;
     QVERIFY(!message.isEmpty());
-    QVERIFY(message.contains(QStringLiteral("Berechtigung")));
+    QVERIFY(message.contains(QStringLiteral("permission")));
 }
 
 QTEST_APPLESS_MAIN(TestPermissionService)

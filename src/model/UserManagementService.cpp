@@ -4,11 +4,11 @@
 #include "model/PasswordHasher.h"
 #include "model/PermissionService.h"
 
-const QString UserManagementService::kMessageUsernameTaken = QStringLiteral("Der Username ist bereits vergeben.");
-const QString UserManagementService::kMessagePasswordTooShort = QStringLiteral("Das Password muss mindestens 8 Zeichen lang sein.");
-const QString UserManagementService::kMessageRequiredFieldMissing = QStringLiteral("Bitte all Pflichtfelder ausfüllen.");
-const QString UserManagementService::kMessageUserUnknown = QStringLiteral("Dieses Benutzerkonto ist nicht vorhanden.");
-const QString UserManagementService::kMessageSaveFailed = QStringLiteral("Die Änderung konnte nicht gespeichert werden.");
+const QString UserManagementService::kMessageUsernameTaken = QStringLiteral("That username is already taken.");
+const QString UserManagementService::kMessagePasswordTooShort = QStringLiteral("The password must be at least 8 characters long.");
+const QString UserManagementService::kMessageRequiredFieldMissing = QStringLiteral("Please fill in all required fields.");
+const QString UserManagementService::kMessageUserUnknown = QStringLiteral("This account does not exist.");
+const QString UserManagementService::kMessageSaveFailed = QStringLiteral("The change could not be saved.");
 
 UserManagementService::UserManagementService(UserRepository &repository)
     : m_repository(repository)
@@ -38,11 +38,11 @@ OperationResult UserManagementService::createUser(const User &actingUser, const 
     const QString salt = PasswordHasher::generateSalt();
 
     User newUser;
-    newUser.setzeBenutzername(sanitizedUsername);
-    newUser.setzeAnzeigename(sanitizedDisplayName);
-    newUser.setzeRolle(role);
-    newUser.setzeSalt(salt);
-    newUser.setzePasswortHash(PasswordHasher::hash(password, salt));
+    newUser.setUsername(sanitizedUsername);
+    newUser.setDisplayName(sanitizedDisplayName);
+    newUser.setRole(role);
+    newUser.setSalt(salt);
+    newUser.setPasswordHash(PasswordHasher::hash(password, salt));
     newUser.setActive(true);
 
     if (!m_repository.save(newUser)) {
@@ -62,7 +62,7 @@ OperationResult UserManagementService::changeRole(const User &actingUser, int ta
         return OperationResult::failure(kMessageUserUnknown);
     }
 
-    targetUser->setzeRolle(newRole);
+    targetUser->setRole(newRole);
     if (!m_repository.save(*targetUser)) {
         return OperationResult::failure(kMessageSaveFailed);
     }

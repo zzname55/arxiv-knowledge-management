@@ -25,7 +25,7 @@ private:
     void buildUi(const QString &title);
     void validateInputAndAccept();
 
-    QSpinBox       *m_bewertungFeld = nullptr;
-    QPlainTextEdit *m_notizFeld     = nullptr;
+    QSpinBox       *m_ratingField = nullptr;
+    QPlainTextEdit *m_noteField     = nullptr;
     QLabel         *m_errorLabel = nullptr;
 };

@@ -30,19 +30,19 @@ QList<ReadingStatus> allReadingStatuses()
 
 std::optional<ReadingStatus> nextStatus(ReadingStatus status)
 {
-    const QList<ReadingStatus> prozess  = allReadingStatuses();
-    const qsizetype         position = prozess.indexOf(status);
+    const QList<ReadingStatus> process  = allReadingStatuses();
+    const qsizetype         position = process.indexOf(status);
 
-    if (position < 0 || position + 1 >= prozess.size()) {
+    if (position < 0 || position + 1 >= process.size()) {
         return std::nullopt;
     }
-    return prozess.at(position + 1);
+    return process.at(position + 1);
 }
 
-bool isAllowedTransition(ReadingStatus von, ReadingStatus nach)
+bool isAllowedTransition(ReadingStatus from, ReadingStatus to)
 {
-    const std::optional<ReadingStatus> folgezustand = nextStatus(von);
-    return folgezustand.has_value() && *folgezustand == nach;
+    const std::optional<ReadingStatus> nextState = nextStatus(from);
+    return nextState.has_value() && *nextState == to;
 }
 
 bool isFinalState(ReadingStatus status)

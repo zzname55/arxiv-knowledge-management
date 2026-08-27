@@ -89,11 +89,11 @@ void TestLeselisteService::legeGrunddatenAn()
     const auto legeBenutzerAn = [this](const QString &username, UserRole role) {
         const QString salt = PasswordHasher::generateSalt();
         User user;
-        user.setzeBenutzername(username);
-        user.setzeAnzeigename(username.toUpper());
-        user.setzeRolle(role);
-        user.setzeSalt(salt);
-        user.setzePasswortHash(PasswordHasher::hash(QStringLiteral("start1234"), salt));
+        user.setUsername(username);
+        user.setDisplayName(username.toUpper());
+        user.setRole(role);
+        user.setSalt(salt);
+        user.setPasswordHash(PasswordHasher::hash(QStringLiteral("start1234"), salt));
         user.setActive(true);
         m_benutzerRepository->save(user);
         return user;
@@ -109,14 +109,14 @@ void TestLeselisteService::legeGrunddatenAn()
 int TestLeselisteService::legeVeroeffentlichungAn(const QString &arxivId, const QString &title)
 {
     Publication v;
-    v.setzeArxivId(arxivId);
-    v.setzeTitel(title);
-    v.setzeAutoren({ QStringLiteral("A. Autorin") });
-    v.setzeZusammenfassung(QStringLiteral("Kurzfassung."));
-    v.setzeArxivKategorie(QStringLiteral("cs.LG"));
-    v.setzeDisziplin(Discipline::ComputerScience);
-    v.setzeVeroeffentlichtAm(QDateTime(QDate(2026, 8, 14), QTime(8, 0), QTimeZone::UTC));
-    v.setzeUrl(QStringLiteral("https://arxiv.org/abs/%1").arg(arxivId));
+    v.setArxivId(arxivId);
+    v.setTitle(title);
+    v.setAuthors({ QStringLiteral("A. Autorin") });
+    v.setSummary(QStringLiteral("Kurzfassung."));
+    v.setArxivCategory(QStringLiteral("cs.LG"));
+    v.setDiscipline(Discipline::ComputerScience);
+    v.setPublishedAt(QDateTime(QDate(2026, 8, 14), QTime(8, 0), QTimeZone::UTC));
+    v.setUrl(QStringLiteral("https://arxiv.org/abs/%1").arg(arxivId));
     m_veroeffentlichungRepository->save(v);
     return v.id();
 }

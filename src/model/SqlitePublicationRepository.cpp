@@ -10,10 +10,10 @@ const QString SqlitePublicationRepository::kAuthorSeparator = QStringLiteral(" |
 namespace {
 
 const QString kColumns = QStringLiteral(
-    "id, arxiv_id, title, authors, summary, arxiv_kategorie, "
-    "discipline, veroeffentlicht_am, url");
+    "id, arxiv_id, title, authors, summary, arxiv_category, "
+    "discipline, published_at, url");
 
-const QString kOrdering = QStringLiteral("ORDER BY veroeffentlicht_am DESC, id DESC");
+const QString kOrdering = QStringLiteral("ORDER BY published_at DESC, id DESC");
 
 } // namespace
 
@@ -22,24 +22,24 @@ SqlitePublicationRepository::SqlitePublicationRepository(Database &database)
 {
 }
 
-Publication SqlitePublicationRepository::fromQuery(const QSqlQuery &abfrage)
+Publication SqlitePublicationRepository::fromQuery(const QSqlQuery &query)
 {
     Publication publication;
-    publication.setzeId(abfrage.value(0).toInt());
-    publication.setzeArxivId(abfrage.value(1).toString());
-    publication.setzeTitel(abfrage.value(2).toString());
+    publication.setId(query.value(0).toInt());
+    publication.setArxivId(query.value(1).toString());
+    publication.setTitle(query.value(2).toString());
 
-    const QString authorsAsText = abfrage.value(3).toString();
-    publication.setzeAutoren(authorsAsText.split(kAuthorSeparator, Qt::SkipEmptyParts));
+    const QString authorsAsText = query.value(3).toString();
+    publication.setAuthors(authorsAsText.split(kAuthorSeparator, Qt::SkipEmptyParts));
 
-    publication.setzeZusammenfassung(abfrage.value(4).toString());
-    publication.setzeArxivKategorie(abfrage.value(5).toString());
+    publication.setSummary(query.value(4).toString());
+    publication.setArxivCategory(query.value(5).toString());
 
-    const std::optional<Discipline> discipline = disciplineFromText(abfrage.value(6).toString());
-    publication.setzeDisziplin(discipline.value_or(Discipline::Other));
+    const std::optional<Discipline> discipline = disciplineFromText(query.value(6).toString());
+    publication.setDiscipline(discipline.value_or(Discipline::Other));
 
-    publication.setzeVeroeffentlichtAm(QDateTime::fromString(abfrage.value(7).toString(), Qt::ISODate));
-    publication.setzeUrl(abfrage.value(8).toString());
+    publication.setPublishedAt(QDateTime::fromString(query.value(7).toString(), Qt::ISODate));
+    publication.setUrl(query.value(8).toString());
 
     return publication;
 }
@@ -48,64 +48,64 @@ std::optional<Publication> SqlitePublicationRepository::findById(int id) const
 {
     m_lastError.clear();
 
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(QStringLiteral("SELECT %1 FROM publication WHERE id = :id").arg(kColumns));
-    abfrage.bindValue(QStringLiteral(":id"), id);
+    QSqlQuery query(m_database.connection());
+    query.prepare(QStringLiteral("SELECT %1 FROM publication WHERE id = :id").arg(kColumns));
+    query.bindValue(QStringLiteral(":id"), id);
 
-    if (!abfrage.exec()) {
-        m_lastError = abfrage.lastError().text();
+    if (!query.exec()) {
+        m_lastError = query.lastError().text();
         return std::nullopt;
     }
-    return abfrage.next() ? std::optional<Publication>(fromQuery(abfrage)) : std::nullopt;
+    return query.next() ? std::optional<Publication>(fromQuery(query)) : std::nullopt;
 }
 
 std::optional<Publication> SqlitePublicationRepository::findByArxivId(const QString &arxivId) const
 {
     m_lastError.clear();
 
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(QStringLiteral("SELECT %1 FROM publication WHERE arxiv_id = :arxiv_id").arg(kColumns));
-    abfrage.bindValue(QStringLiteral(":arxiv_id"), arxivId);
+    QSqlQuery query(m_database.connection());
+    query.prepare(QStringLiteral("SELECT %1 FROM publication WHERE arxiv_id = :arxiv_id").arg(kColumns));
+    query.bindValue(QStringLiteral(":arxiv_id"), arxivId);
 
-    if (!abfrage.exec()) {
-        m_lastError = abfrage.lastError().text();
+    if (!query.exec()) {
+        m_lastError = query.lastError().text();
         return std::nullopt;
     }
-    return abfrage.next() ? std::optional<Publication>(fromQuery(abfrage)) : std::nullopt;
+    return query.next() ? std::optional<Publication>(fromQuery(query)) : std::nullopt;
 }
 
-QList<Publication> SqlitePublicationRepository::findByDiscipline(Discipline discipline, int maxAnzahl) const
+QList<Publication> SqlitePublicationRepository::findByDiscipline(Discipline discipline, int maxCount) const
 {
     m_lastError.clear();
     QList<Publication> publications;
 
     const bool mitFilter = (discipline != Discipline::Alle);
-    const bool mitGrenze = (maxAnzahl != kUnlimited);
+    const bool mitGrenze = (maxCount != kUnlimited);
 
-    QString anweisung = QStringLiteral("SELECT %1 FROM publication ").arg(kColumns);
+    QString statement = QStringLiteral("SELECT %1 FROM publication ").arg(kColumns);
     if (mitFilter) {
-        anweisung += QStringLiteral("WHERE discipline = :discipline ");
+        statement += QStringLiteral("WHERE discipline = :discipline ");
     }
-    anweisung += kOrdering;
+    statement += kOrdering;
     if (mitGrenze) {
-        anweisung += QStringLiteral(" LIMIT :max_count");
+        statement += QStringLiteral(" LIMIT :max_count");
     }
 
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(anweisung);
+    QSqlQuery query(m_database.connection());
+    query.prepare(statement);
     if (mitFilter) {
-        abfrage.bindValue(QStringLiteral(":discipline"), disciplineToText(discipline));
+        query.bindValue(QStringLiteral(":discipline"), disciplineToText(discipline));
     }
     if (mitGrenze) {
-        abfrage.bindValue(QStringLiteral(":max_count"), maxAnzahl);
+        query.bindValue(QStringLiteral(":max_count"), maxCount);
     }
 
-    if (!abfrage.exec()) {
-        m_lastError = abfrage.lastError().text();
+    if (!query.exec()) {
+        m_lastError = query.lastError().text();
         return publications;
     }
-    while (abfrage.next()) {
-        publications.append(fromQuery(abfrage));
+    while (query.next()) {
+        publications.append(fromQuery(query));
     }
     return publications;
 }
@@ -117,7 +117,7 @@ bool SqlitePublicationRepository::save(Publication &publication)
     if (!publication.isPersisted()) {
         const std::optional<Publication> bereitsBekannt = findByArxivId(publication.arxivId());
         if (bereitsBekannt.has_value()) {
-            publication.setzeId(bereitsBekannt->id());
+            publication.setId(bereitsBekannt->id());
         }
     }
 
@@ -126,56 +126,56 @@ bool SqlitePublicationRepository::save(Publication &publication)
 
 bool SqlitePublicationRepository::insert(Publication &publication)
 {
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(QStringLiteral(
+    QSqlQuery query(m_database.connection());
+    query.prepare(QStringLiteral(
         "INSERT INTO publication "
-        "(arxiv_id, title, authors, summary, arxiv_kategorie, discipline, veroeffentlicht_am, url) "
-        "VALUES (:arxiv_id, :title, :authors, :summary, :arxiv_kategorie, :discipline, :veroeffentlicht_am, :url)"));
+        "(arxiv_id, title, authors, summary, arxiv_category, discipline, published_at, url) "
+        "VALUES (:arxiv_id, :title, :authors, :summary, :arxiv_category, :discipline, :published_at, :url)"));
 
-    abfrage.bindValue(QStringLiteral(":arxiv_id"),        publication.arxivId());
-    abfrage.bindValue(QStringLiteral(":title"),           publication.title());
-    abfrage.bindValue(QStringLiteral(":authors"),         publication.authors().join(kAuthorSeparator));
-    abfrage.bindValue(QStringLiteral(":summary"), publication.summary());
-    abfrage.bindValue(QStringLiteral(":arxiv_kategorie"), publication.arxivCategory());
-    abfrage.bindValue(QStringLiteral(":discipline"),       disciplineToText(publication.discipline()));
-    abfrage.bindValue(QStringLiteral(":veroeffentlicht_am"), publication.publishedAt().toUTC().toString(Qt::ISODate));
-    abfrage.bindValue(QStringLiteral(":url"),             publication.url());
+    query.bindValue(QStringLiteral(":arxiv_id"),        publication.arxivId());
+    query.bindValue(QStringLiteral(":title"),           publication.title());
+    query.bindValue(QStringLiteral(":authors"),         publication.authors().join(kAuthorSeparator));
+    query.bindValue(QStringLiteral(":summary"), publication.summary());
+    query.bindValue(QStringLiteral(":arxiv_category"), publication.arxivCategory());
+    query.bindValue(QStringLiteral(":discipline"),       disciplineToText(publication.discipline()));
+    query.bindValue(QStringLiteral(":published_at"), publication.publishedAt().toUTC().toString(Qt::ISODate));
+    query.bindValue(QStringLiteral(":url"),             publication.url());
 
-    if (!abfrage.exec()) {
-        m_lastError = QStringLiteral("Die Publication \"%1\" konnte nicht gespeichert werden: %2")
-                              .arg(publication.arxivId(), abfrage.lastError().text());
+    if (!query.exec()) {
+        m_lastError = QStringLiteral("The publication \"%1\" could not be saved: %2")
+                              .arg(publication.arxivId(), query.lastError().text());
         return false;
     }
 
-    publication.setzeId(abfrage.lastInsertId().toInt());
+    publication.setId(query.lastInsertId().toInt());
     return true;
 }
 
 bool SqlitePublicationRepository::update(const Publication &publication)
 {
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(QStringLiteral(
+    QSqlQuery query(m_database.connection());
+    query.prepare(QStringLiteral(
         "UPDATE publication SET title              = :title, "
         "                             authors            = :authors, "
         "                             summary    = :summary, "
-        "                             arxiv_kategorie    = :arxiv_kategorie, "
+        "                             arxiv_category    = :arxiv_category, "
         "                             discipline          = :discipline, "
-        "                             veroeffentlicht_am = :veroeffentlicht_am, "
+        "                             published_at = :published_at, "
         "                             url                = :url "
         "WHERE id = :id"));
 
-    abfrage.bindValue(QStringLiteral(":title"),           publication.title());
-    abfrage.bindValue(QStringLiteral(":authors"),         publication.authors().join(kAuthorSeparator));
-    abfrage.bindValue(QStringLiteral(":summary"), publication.summary());
-    abfrage.bindValue(QStringLiteral(":arxiv_kategorie"), publication.arxivCategory());
-    abfrage.bindValue(QStringLiteral(":discipline"),       disciplineToText(publication.discipline()));
-    abfrage.bindValue(QStringLiteral(":veroeffentlicht_am"), publication.publishedAt().toUTC().toString(Qt::ISODate));
-    abfrage.bindValue(QStringLiteral(":url"),             publication.url());
-    abfrage.bindValue(QStringLiteral(":id"),              publication.id());
+    query.bindValue(QStringLiteral(":title"),           publication.title());
+    query.bindValue(QStringLiteral(":authors"),         publication.authors().join(kAuthorSeparator));
+    query.bindValue(QStringLiteral(":summary"), publication.summary());
+    query.bindValue(QStringLiteral(":arxiv_category"), publication.arxivCategory());
+    query.bindValue(QStringLiteral(":discipline"),       disciplineToText(publication.discipline()));
+    query.bindValue(QStringLiteral(":published_at"), publication.publishedAt().toUTC().toString(Qt::ISODate));
+    query.bindValue(QStringLiteral(":url"),             publication.url());
+    query.bindValue(QStringLiteral(":id"),              publication.id());
 
-    if (!abfrage.exec()) {
-        m_lastError = QStringLiteral("Die Publication \"%1\" konnte nicht geaendert werden: %2")
-                              .arg(publication.arxivId(), abfrage.lastError().text());
+    if (!query.exec()) {
+        m_lastError = QStringLiteral("The publication \"%1\" could not be updated: %2")
+                              .arg(publication.arxivId(), query.lastError().text());
         return false;
     }
     return true;
@@ -185,12 +185,12 @@ int SqlitePublicationRepository::count() const
 {
     m_lastError.clear();
 
-    QSqlQuery abfrage(m_database.connection());
-    if (!abfrage.exec(QStringLiteral("SELECT COUNT(*) FROM publication")) || !abfrage.next()) {
-        m_lastError = abfrage.lastError().text();
+    QSqlQuery query(m_database.connection());
+    if (!query.exec(QStringLiteral("SELECT COUNT(*) FROM publication")) || !query.next()) {
+        m_lastError = query.lastError().text();
         return 0;
     }
-    return abfrage.value(0).toInt();
+    return query.value(0).toInt();
 }
 
 QString SqlitePublicationRepository::lastError() const

@@ -42,10 +42,10 @@ void TestLesestatus::umwandlung_istInBeideRichtungenVerlustfrei()
 
 void TestLesestatus::alleLesestatus_beschreibtDenVollstaendigenProzess()
 {
-    const QList<ReadingStatus> prozess = allReadingStatuses();
-    QCOMPARE(prozess.size(), 5);
-    QCOMPARE(prozess.first(), ReadingStatus::Noted);
-    QCOMPARE(prozess.last(), ReadingStatus::Archived);
+    const QList<ReadingStatus> process = allReadingStatuses();
+    QCOMPARE(process.size(), 5);
+    QCOMPARE(process.first(), ReadingStatus::Noted);
+    QCOMPARE(process.last(), ReadingStatus::Archived);
 }
 
 void TestLesestatus::istErlaubterUebergang_erlaubtDieSchritteDesProzesses()

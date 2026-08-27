@@ -19,13 +19,13 @@ void MainWindow::buildUi(const User &user, const QList<Page> &pages)
     setWindowTitle(tr("ArxivKnowledgeManagement"));
     resize(1100, 700);
 
-    auto *benutzerAnzeige = new QLabel(tr("Logged in: %1 (%2)").arg(user.displayName(), roleToText(user.role())), this);
-    auto *abmeldenKnopf   = new QPushButton(tr("Logout"), this);
+    auto *userLabel = new QLabel(tr("Logged in: %1 (%2)").arg(user.displayName(), roleToText(user.role())), this);
+    auto *logoutButton   = new QPushButton(tr("Logout"), this);
 
     auto *headerRow = new QHBoxLayout;
-    headerRow->addWidget(benutzerAnzeige);
+    headerRow->addWidget(userLabel);
     headerRow->addStretch();
-    headerRow->addWidget(abmeldenKnopf);
+    headerRow->addWidget(logoutButton);
 
     m_navigation = new QListWidget(this);
     m_navigation->setObjectName(QStringLiteral("navigation"));
@@ -60,7 +60,7 @@ void MainWindow::buildUi(const User &user, const QList<Page> &pages)
     setCentralWidget(zentralWidget);
     statusBar()->showMessage(tr("Ready."));
 
-    connect(abmeldenKnopf, &QPushButton::clicked, this, &MainWindow::logoutRequested);
+    connect(logoutButton, &QPushButton::clicked, this, &MainWindow::logoutRequested);
 
     connect(m_navigation, &QListWidget::currentRowChanged, this, [this](int row) {
         if (row < 0 || row >= m_stackIndexPerNavRow.size()) {

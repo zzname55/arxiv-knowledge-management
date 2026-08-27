@@ -27,23 +27,23 @@ private slots:
     void parse_uebergehtEintraegeOhneArxivId();
 
 private:
-    static QByteArray leseBeispieldatei(const QString &dateiname);
+    static QByteArray readSampleFile(const QString &fileName);
     QByteArray m_beispielAntwort;
 };
 
-QByteArray TestArxivAtomParser::leseBeispieldatei(const QString &dateiname)
+QByteArray TestArxivAtomParser::readSampleFile(const QString &fileName)
 {
-    QFile datei(QDir(QStringLiteral(TEST_DATA_DIR)).filePath(dateiname));
-    if (!datei.open(QIODevice::ReadOnly)) {
-        qWarning("Beispieldatei %s konnte nicht geoeffnet werden.", qPrintable(datei.fileName()));
+    QFile file(QDir(QStringLiteral(TEST_DATA_DIR)).filePath(fileName));
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning("Sample file %s could not be opened.", qPrintable(file.fileName()));
         return QByteArray();
     }
-    return datei.readAll();
+    return file.readAll();
 }
 
 void TestArxivAtomParser::initTestCase()
 {
-    m_beispielAntwort = leseBeispieldatei(QStringLiteral("arxiv_response.xml"));
+    m_beispielAntwort = readSampleFile(QStringLiteral("arxiv_response.xml"));
     QVERIFY(!m_beispielAntwort.isEmpty());
 }
 
@@ -112,7 +112,7 @@ void TestArxivAtomParser::parse_baueDieArxivUrl()
 
 void TestArxivAtomParser::parse_liefertLeereListeBeiFeedOhneEintraege()
 {
-    const QByteArray leer = leseBeispieldatei(QStringLiteral("arxiv_response_empty.xml"));
+    const QByteArray leer = readSampleFile(QStringLiteral("arxiv_response_empty.xml"));
     QVERIFY(!leer.isEmpty());
     QString failure;
     const QList<Publication> v = ArxivAtomParser::parse(leer, &failure);
@@ -138,7 +138,7 @@ void TestArxivAtomParser::parse_meldetFehlerBeiLeererEingabe()
 
 void TestArxivAtomParser::parse_uebergehtEintraegeOhneArxivId()
 {
-    const QByteArray antwort = leseBeispieldatei(QStringLiteral("arxiv_response_missing_id.xml"));
+    const QByteArray antwort = readSampleFile(QStringLiteral("arxiv_response_missing_id.xml"));
     QVERIFY(!antwort.isEmpty());
     QString failure;
     const QList<Publication> v = ArxivAtomParser::parse(antwort, &failure);

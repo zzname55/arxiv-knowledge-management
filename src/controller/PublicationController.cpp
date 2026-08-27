@@ -4,8 +4,8 @@
 #include "model/ArxivClient.h"
 #include "model/PublicationRepository.h"
 
-const QString PublicationController::kHintNoResults = QStringLiteral("Keine Veröffentlichungen zu dieser Discipline found.");
-const QString PublicationController::kMessageFetchSuccessful = QStringLiteral("Veröffentlichungen von arXiv geladen.");
+const QString PublicationController::kHintNoResults = QStringLiteral("No publications found for this discipline.");
+const QString PublicationController::kMessageFetchSuccessful = QStringLiteral("Publications loaded from arXiv.");
 
 PublicationController::PublicationController(ArxivClient &arxivClient, PublicationRepository &repository,
                                                          PublicationViewContract &ansicht, QObject *parentObject)
@@ -15,7 +15,7 @@ PublicationController::PublicationController(ArxivClient &arxivClient, Publicati
     , m_view(ansicht)
 {
     connect(&m_arxivClient, &ArxivClient::publicationsReceived, this, &PublicationController::publicationsReceived);
-    connect(&m_arxivClient, &ArxivClient::fehlerAufgetreten, this, &PublicationController::fetchFailed);
+    connect(&m_arxivClient, &ArxivClient::fetchFailed, this, &PublicationController::fetchFailed);
 }
 
 void PublicationController::refreshView()
@@ -46,7 +46,7 @@ void PublicationController::publicationsReceived(const QList<Publication> &publi
     for (const Publication &empfangene : publications) {
         Publication zuSpeichern = empfangene;
         if (!m_repository.save(zuSpeichern)) {
-            m_view.showError(QStringLiteral("Die abgerufenen Veröffentlichungen konnten nicht gespeichert werden."));
+            m_view.showError(QStringLiteral("The fetched publications could not be saved."));
             return;
         }
     }

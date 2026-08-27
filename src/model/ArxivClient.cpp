@@ -16,28 +16,28 @@ ArxivClient::ArxivClient(QObject *parentObject)
 {
 }
 
-void ArxivClient::fetch(Discipline discipline, int maxTreffer)
+void ArxivClient::fetch(Discipline discipline, int maxResults)
 {
     if (m_activeRequest != nullptr) {
         m_activeRequest->abort();
         m_activeRequest = nullptr;
     }
 
-    QNetworkRequest anfrage(buildArxivQueryUrl(discipline, maxTreffer));
-    anfrage.setHeader(QNetworkRequest::UserAgentHeader, kUserAgent);
-    anfrage.setTransferTimeout(kTimeoutInMilliseconds);
-    anfrage.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
+    QNetworkRequest request(buildArxivQueryUrl(discipline, maxResults));
+    request.setHeader(QNetworkRequest::UserAgentHeader, kUserAgent);
+    request.setTransferTimeout(kTimeoutInMilliseconds);
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
 
-    m_activeRequest = m_network->get(anfrage);
+    m_activeRequest = m_network->get(request);
 
     connect(m_activeRequest, &QNetworkReply::finished, this, [this]() {
-        QNetworkReply *antwort = m_activeRequest;
+        QNetworkReply *reply = m_activeRequest;
         m_activeRequest      = nullptr;
-        if (antwort == nullptr) {
+        if (reply == nullptr) {
             return;
         }
-        handleResponse(antwort);
-        antwort->deleteLater();
+        handleResponse(reply);
+        reply->deleteLater();
     });
 }
 
@@ -46,41 +46,41 @@ bool ArxivClient::isFetching() const
     return m_activeRequest != nullptr;
 }
 
-void ArxivClient::handleResponse(QNetworkReply *antwort)
+void ArxivClient::handleResponse(QNetworkReply *reply)
 {
-    if (antwort->error() == QNetworkReply::OperationCanceledError) {
+    if (reply->error() == QNetworkReply::OperationCanceledError) {
         return;
     }
-    if (antwort->error() != QNetworkReply::NoError) {
-        emit fehlerAufgetreten(userMessageFor(antwort));
+    if (reply->error() != QNetworkReply::NoError) {
+        emit fetchFailed(userMessageFor(reply));
         return;
     }
 
-    QString parserfehler;
-    const QList<Publication> publications = ArxivAtomParser::parse(antwort->readAll(), &parserfehler);
+    QString parseError;
+    const QList<Publication> publications = ArxivAtomParser::parse(reply->readAll(), &parseError);
 
-    if (!parserfehler.isEmpty()) {
-        emit fehlerAufgetreten(parserfehler);
+    if (!parseError.isEmpty()) {
+        emit fetchFailed(parseError);
         return;
     }
     emit publicationsReceived(publications);
 }
 
-QString ArxivClient::userMessageFor(QNetworkReply *antwort)
+QString ArxivClient::userMessageFor(QNetworkReply *reply)
 {
-    switch (antwort->error()) {
+    switch (reply->error()) {
     case QNetworkReply::HostNotFoundError:
     case QNetworkReply::UnknownNetworkError:
-        return QStringLiteral("arXiv ist nicht erreichbar. Bitte die Internetverbindung pruefen.");
+        return QStringLiteral("arXiv cannot be reached. Please check your internet connection.");
     case QNetworkReply::TimeoutError:
     case QNetworkReply::OperationCanceledError:
-        return QStringLiteral("arXiv hat nicht rechtzeitig geantwortet. Bitte spaeter erneut versuchen.");
+        return QStringLiteral("arXiv did not respond in time. Please try again later.");
     case QNetworkReply::ContentNotFoundError:
-        return QStringLiteral("Die Abfrage wurde von arXiv nicht verstanden.");
+        return QStringLiteral("arXiv did not understand the query.");
     case QNetworkReply::ServiceUnavailableError:
     case QNetworkReply::InternalServerError:
-        return QStringLiteral("arXiv meldet eine Stoerung. Bitte spaeter erneut versuchen.");
+        return QStringLiteral("arXiv reports a service problem. Please try again later.");
     default:
-        return QStringLiteral("Der Abruf von arXiv ist fehlgeschlagen: %1").arg(antwort->errorString());
+        return QStringLiteral("Fetching from arXiv failed: %1").arg(reply->errorString());
     }
 }

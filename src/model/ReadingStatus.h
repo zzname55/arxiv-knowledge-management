@@ -23,7 +23,7 @@ std::optional<ReadingStatus> readingStatusFromText(const QString &text);
 QList<ReadingStatus> allReadingStatuses();
 
 /// Erlaubt ist ausschliesslich der jeweils naechste Schritt.
-bool isAllowedTransition(ReadingStatus von, ReadingStatus nach);
+bool isAllowedTransition(ReadingStatus from, ReadingStatus to);
 
 /// std::nullopt im Endzustand.
 std::optional<ReadingStatus> nextStatus(ReadingStatus status);

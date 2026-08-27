@@ -20,63 +20,63 @@ void CompleteReadingDialog::buildUi(const QString &title)
     setWindowTitle(tr("Complete Reading"));
     setModal(true);
 
-    auto *titelBezeichnung = new QLabel(tr("Publication"), this);
+    auto *titleLabel = new QLabel(tr("Publication"), this);
     auto *titelAnzeige     = new QLabel(title, this);
     titelAnzeige->setWordWrap(true);
     QFont titelSchrift = titelAnzeige->font();
     titelSchrift.setBold(true);
     titelAnzeige->setFont(titelSchrift);
 
-    m_bewertungFeld = new QSpinBox(this);
-    m_bewertungFeld->setRange(ReadingListService::kRatingMinimum, ReadingListService::kRatingMaximum);
-    m_bewertungFeld->setValue(ReadingListService::kRatingMinimum + 2);
-    m_bewertungFeld->setSuffix(tr("   (1 = low, 5 = high)"));
+    m_ratingField = new QSpinBox(this);
+    m_ratingField->setRange(ReadingListService::kRatingMinimum, ReadingListService::kRatingMaximum);
+    m_ratingField->setValue(ReadingListService::kRatingMinimum + 2);
+    m_ratingField->setSuffix(tr("   (1 = low, 5 = high)"));
 
-    auto *bewertungZeile = new QHBoxLayout;
-    bewertungZeile->addWidget(new QLabel(tr("Rating *"), this));
-    bewertungZeile->addWidget(m_bewertungFeld);
-    bewertungZeile->addStretch();
+    auto *ratingRow = new QHBoxLayout;
+    ratingRow->addWidget(new QLabel(tr("Rating *"), this));
+    ratingRow->addWidget(m_ratingField);
+    ratingRow->addStretch();
 
-    m_notizFeld = new QPlainTextEdit(this);
-    m_notizFeld->setPlaceholderText(tr("What is this publication useful for at work?"));
-    m_notizFeld->setMinimumHeight(90);
+    m_noteField = new QPlainTextEdit(this);
+    m_noteField->setPlaceholderText(tr("What is this publication useful for at work?"));
+    m_noteField->setMinimumHeight(90);
 
     m_errorLabel = new QLabel(this);
     m_errorLabel->setStyleSheet(QStringLiteral("color: #b00020;"));
     m_errorLabel->setWordWrap(true);
     m_errorLabel->setMinimumHeight(28);
 
-    auto *abbrechenKnopf = new QPushButton(tr("Cancel"), this);
-    auto *speichernKnopf = new QPushButton(tr("Save"), this);
-    speichernKnopf->setDefault(true);
+    auto *cancelButton = new QPushButton(tr("Cancel"), this);
+    auto *saveButton = new QPushButton(tr("Save"), this);
+    saveButton->setDefault(true);
 
-    auto *knopfleiste = new QHBoxLayout;
-    knopfleiste->addWidget(new QLabel(tr("* Required field"), this));
-    knopfleiste->addStretch();
-    knopfleiste->addWidget(abbrechenKnopf);
-    knopfleiste->addWidget(speichernKnopf);
+    auto *buttonBar = new QHBoxLayout;
+    buttonBar->addWidget(new QLabel(tr("* Required field"), this));
+    buttonBar->addStretch();
+    buttonBar->addWidget(cancelButton);
+    buttonBar->addWidget(saveButton);
 
     auto *mainLayout = new QVBoxLayout(this);
-    mainLayout->addWidget(titelBezeichnung);
+    mainLayout->addWidget(titleLabel);
     mainLayout->addWidget(titelAnzeige);
     mainLayout->addSpacing(8);
-    mainLayout->addLayout(bewertungZeile);
+    mainLayout->addLayout(ratingRow);
     mainLayout->addWidget(new QLabel(tr("Note *"), this));
-    mainLayout->addWidget(m_notizFeld);
+    mainLayout->addWidget(m_noteField);
     mainLayout->addWidget(m_errorLabel);
-    mainLayout->addLayout(knopfleiste);
+    mainLayout->addLayout(buttonBar);
 
     setMinimumWidth(460);
 
-    connect(abbrechenKnopf, &QPushButton::clicked, this, &QDialog::reject);
-    connect(speichernKnopf, &QPushButton::clicked, this, &CompleteReadingDialog::validateInputAndAccept);
+    connect(cancelButton, &QPushButton::clicked, this, &QDialog::reject);
+    connect(saveButton, &QPushButton::clicked, this, &CompleteReadingDialog::validateInputAndAccept);
 }
 
 void CompleteReadingDialog::validateInputAndAccept()
 {
-    if (m_notizFeld->toPlainText().trimmed().isEmpty()) {
+    if (m_noteField->toPlainText().trimmed().isEmpty()) {
         showError(ReadingListService::kMessageNoteMissing);
-        m_notizFeld->setFocus();
+        m_noteField->setFocus();
         return;
     }
     accept();
@@ -84,12 +84,12 @@ void CompleteReadingDialog::validateInputAndAccept()
 
 int CompleteReadingDialog::rating() const
 {
-    return m_bewertungFeld->value();
+    return m_ratingField->value();
 }
 
 QString CompleteReadingDialog::note() const
 {
-    return m_notizFeld->toPlainText().trimmed();
+    return m_noteField->toPlainText().trimmed();
 }
 
 void CompleteReadingDialog::showError(const QString &message)

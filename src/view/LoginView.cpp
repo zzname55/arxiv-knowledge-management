@@ -26,9 +26,9 @@ void LoginView::buildUi()
     heading->setFont(ueberschriftSchrift);
     heading->setAlignment(Qt::AlignCenter);
 
-    auto *trennlinie = new QFrame(this);
-    trennlinie->setFrameShape(QFrame::HLine);
-    trennlinie->setFrameShadow(QFrame::Sunken);
+    auto *separator = new QFrame(this);
+    separator->setFrameShape(QFrame::HLine);
+    separator->setFrameShadow(QFrame::Sunken);
 
     m_usernameField = new QLineEdit(this);
     m_usernameField->setObjectName(QStringLiteral("benutzernameFeld"));
@@ -38,9 +38,9 @@ void LoginView::buildUi()
     m_passwordField->setObjectName(QStringLiteral("passwortFeld"));
     m_passwordField->setEchoMode(QLineEdit::Password);
 
-    auto *formular = new QFormLayout;
-    formular->addRow(tr("Username"), m_usernameField);
-    formular->addRow(tr("Password"),     m_passwordField);
+    auto *form = new QFormLayout;
+    form->addRow(tr("Username"), m_usernameField);
+    form->addRow(tr("Password"),     m_passwordField);
 
     m_errorLabel = new QLabel(this);
     m_errorLabel->setObjectName(QStringLiteral("fehlerAnzeige"));
@@ -48,28 +48,28 @@ void LoginView::buildUi()
     m_errorLabel->setWordWrap(true);
     m_errorLabel->setMinimumHeight(32);
 
-    auto *abbrechenKnopf = new QPushButton(tr("Cancel"), this);
+    auto *cancelButton = new QPushButton(tr("Cancel"), this);
     m_loginButton       = new QPushButton(tr("Login"), this);
     m_loginButton->setObjectName(QStringLiteral("anmeldenKnopf"));
     m_loginButton->setDefault(true);
 
-    auto *knopfleiste = new QHBoxLayout;
-    knopfleiste->addStretch();
-    knopfleiste->addWidget(abbrechenKnopf);
-    knopfleiste->addWidget(m_loginButton);
+    auto *buttonBar = new QHBoxLayout;
+    buttonBar->addStretch();
+    buttonBar->addWidget(cancelButton);
+    buttonBar->addWidget(m_loginButton);
 
     auto *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(heading);
-    mainLayout->addWidget(trennlinie);
+    mainLayout->addWidget(separator);
     mainLayout->addSpacing(8);
-    mainLayout->addLayout(formular);
+    mainLayout->addLayout(form);
     mainLayout->addWidget(m_errorLabel);
-    mainLayout->addLayout(knopfleiste);
+    mainLayout->addLayout(buttonBar);
 
     setMinimumWidth(380);
 
     connect(m_loginButton, &QPushButton::clicked, this, &LoginView::loginRequested);
-    connect(abbrechenKnopf, &QPushButton::clicked, this, &QDialog::reject);
+    connect(cancelButton, &QPushButton::clicked, this, &QDialog::reject);
     connect(m_usernameField, &QLineEdit::returnPressed, this, &LoginView::loginRequested);
     connect(m_passwordField, &QLineEdit::returnPressed, this, &LoginView::loginRequested);
 }

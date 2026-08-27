@@ -112,21 +112,21 @@ Discipline disciplineFromArxivCategory(const QString &arxivCategory)
     return prefixMapping().value(praefix, Discipline::Other);
 }
 
-QUrl buildArxivQueryUrl(Discipline discipline, int maxTreffer)
+QUrl buildArxivQueryUrl(Discipline discipline, int maxResults)
 {
     QStringList kategorieAusdruecke;
     for (const QString &praefix : searchPrefixes(discipline)) {
         kategorieAusdruecke.append(QStringLiteral("cat:%1.*").arg(praefix));
     }
 
-    QUrlQuery abfrageteile;
-    abfrageteile.addQueryItem(QStringLiteral("search_query"), kategorieAusdruecke.join(QStringLiteral(" OR ")));
-    abfrageteile.addQueryItem(QStringLiteral("sortBy"),      QStringLiteral("submittedDate"));
-    abfrageteile.addQueryItem(QStringLiteral("sortOrder"),   QStringLiteral("descending"));
-    abfrageteile.addQueryItem(QStringLiteral("start"),       QStringLiteral("0"));
-    abfrageteile.addQueryItem(QStringLiteral("max_results"), QString::number(maxTreffer));
+    QUrlQuery queryParts;
+    queryParts.addQueryItem(QStringLiteral("search_query"), kategorieAusdruecke.join(QStringLiteral(" OR ")));
+    queryParts.addQueryItem(QStringLiteral("sortBy"),      QStringLiteral("submittedDate"));
+    queryParts.addQueryItem(QStringLiteral("sortOrder"),   QStringLiteral("descending"));
+    queryParts.addQueryItem(QStringLiteral("start"),       QStringLiteral("0"));
+    queryParts.addQueryItem(QStringLiteral("max_results"), QString::number(maxResults));
 
     QUrl url(kApiAddress);
-    url.setQuery(abfrageteile);
+    url.setQuery(queryParts);
     return url;
 }

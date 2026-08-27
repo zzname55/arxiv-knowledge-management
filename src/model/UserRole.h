@@ -18,8 +18,8 @@ enum class UserRole {
 /// Deutsche Bezeichnung fuer Anzeige und Database.
 QString roleToText(UserRole role);
 
-/// Umkehrung von roleToText().
+/// Umkehrung from roleToText().
 std::optional<UserRole> roleFromText(const QString &text);
 
-/// Alle Rollen, aufsteigend nach Berechtigungsumfang.
+/// Alle Rollen, aufsteigend to Berechtigungsumfang.
 QList<UserRole> allRoles();

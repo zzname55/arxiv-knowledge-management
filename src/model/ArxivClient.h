@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // ArxivClient — MVC layer: MODEL
-// Holt die Atom-Antwort von der arXiv-API asynchron (AK-02.4: Oberflaeche
+// Holt die Atom-Antwort from der arXiv-API asynchron (AK-02.4: Oberflaeche
 // darf nicht einfrieren) und reicht die ausgewerteten Arbeiten per Signal weiter.
 // ---------------------------------------------------------------------------
 #pragma once
@@ -22,7 +22,7 @@ public:
     explicit ArxivClient(QObject *parentObject = nullptr);
 
     /// Startet den Abruf. Ein laufender Abruf wird zuvor abgebrochen.
-    void fetch(Discipline discipline, int maxTreffer = kDefaultResultCount);
+    void fetch(Discipline discipline, int maxResults = kDefaultResultCount);
 
     bool isFetching() const;
 
@@ -30,11 +30,11 @@ public:
 
 signals:
     void publicationsReceived(const QList<Publication> &publications);
-    void fehlerAufgetreten(const QString &message);
+    void fetchFailed(const QString &message);
 
 private:
-    void handleResponse(QNetworkReply *antwort);
-    static QString userMessageFor(QNetworkReply *antwort);
+    void handleResponse(QNetworkReply *reply);
+    static QString userMessageFor(QNetworkReply *reply);
 
     QNetworkAccessManager *m_network        = nullptr;
     QNetworkReply         *m_activeRequest = nullptr;

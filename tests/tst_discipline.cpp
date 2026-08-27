@@ -108,29 +108,29 @@ void TestDisziplin::abfrageUrl_zeigtAufDieOffizielleApi()
 
 void TestDisziplin::abfrageUrl_begrenztAufFuenfTreffer()
 {
-    const QUrlQuery abfrage(buildArxivQueryUrl(Discipline::Alle, 5));
-    QCOMPARE(abfrage.queryItemValue(QStringLiteral("max_results")), QStringLiteral("5"));
+    const QUrlQuery query(buildArxivQueryUrl(Discipline::Alle, 5));
+    QCOMPARE(query.queryItemValue(QStringLiteral("max_results")), QStringLiteral("5"));
 }
 
 void TestDisziplin::abfrageUrl_sortiertNachEinreichungsdatumAbsteigend()
 {
-    const QUrlQuery abfrage(buildArxivQueryUrl(Discipline::Alle, 5));
-    QCOMPARE(abfrage.queryItemValue(QStringLiteral("sortBy")), QStringLiteral("submittedDate"));
-    QCOMPARE(abfrage.queryItemValue(QStringLiteral("sortOrder")), QStringLiteral("descending"));
+    const QUrlQuery query(buildArxivQueryUrl(Discipline::Alle, 5));
+    QCOMPARE(query.queryItemValue(QStringLiteral("sortBy")), QStringLiteral("submittedDate"));
+    QCOMPARE(query.queryItemValue(QStringLiteral("sortOrder")), QStringLiteral("descending"));
 }
 
 void TestDisziplin::abfrageUrl_beschraenktAufDieGewaehlteDisziplin()
 {
-    const QUrlQuery abfrage(buildArxivQueryUrl(Discipline::Mathematics, 5));
-    const QString suchbegriff = abfrage.queryItemValue(QStringLiteral("search_query"), QUrl::FullyDecoded);
+    const QUrlQuery query(buildArxivQueryUrl(Discipline::Mathematics, 5));
+    const QString suchbegriff = query.queryItemValue(QStringLiteral("search_query"), QUrl::FullyDecoded);
     QVERIFY(suchbegriff.contains(QStringLiteral("cat:math")));
     QVERIFY(!suchbegriff.contains(QStringLiteral("cat:cs")));
 }
 
 void TestDisziplin::abfrageUrl_umfasstBeiAlleDisziplinenMehrereKategorien()
 {
-    const QUrlQuery abfrage(buildArxivQueryUrl(Discipline::Alle, 5));
-    const QString suchbegriff = abfrage.queryItemValue(QStringLiteral("search_query"), QUrl::FullyDecoded);
+    const QUrlQuery query(buildArxivQueryUrl(Discipline::Alle, 5));
+    const QString suchbegriff = query.queryItemValue(QStringLiteral("search_query"), QUrl::FullyDecoded);
     QVERIFY(suchbegriff.contains(QStringLiteral("cat:cs")));
     QVERIFY(suchbegriff.contains(QStringLiteral("cat:math")));
     QVERIFY(suchbegriff.contains(QStringLiteral("cat:physics")));

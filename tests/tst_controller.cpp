@@ -59,7 +59,7 @@ private slots:
 private:
     void meldeAn(const QString &username);
     int  legeVeroeffentlichungAn(const QString &arxivId, const QString &title, Discipline discipline);
-    static Publication baueVeroeffentlichung(const QString &arxivId, const QString &title, Discipline discipline);
+    static Publication buildPublication(const QString &arxivId, const QString &title, Discipline discipline);
 
     std::unique_ptr<Database>                         m_database;
     std::unique_ptr<SqliteUserRepository>          m_benutzerRepository;
@@ -133,23 +133,23 @@ void TestController::meldeAn(const QString &username)
     QVERIFY(m_authentication->isLoggedIn());
 }
 
-Publication TestController::baueVeroeffentlichung(const QString &arxivId, const QString &title, Discipline discipline)
+Publication TestController::buildPublication(const QString &arxivId, const QString &title, Discipline discipline)
 {
     Publication v;
-    v.setzeArxivId(arxivId);
-    v.setzeTitel(title);
-    v.setzeAutoren({ QStringLiteral("A. Autorin") });
-    v.setzeZusammenfassung(QStringLiteral("Kurzfassung."));
-    v.setzeArxivKategorie(QStringLiteral("cs.LG"));
-    v.setzeDisziplin(discipline);
-    v.setzeVeroeffentlichtAm(QDateTime(QDate(2026, 8, 14), QTime(8, 0), QTimeZone::UTC));
-    v.setzeUrl(QStringLiteral("https://arxiv.org/abs/%1").arg(arxivId));
+    v.setArxivId(arxivId);
+    v.setTitle(title);
+    v.setAuthors({ QStringLiteral("A. Autorin") });
+    v.setSummary(QStringLiteral("Kurzfassung."));
+    v.setArxivCategory(QStringLiteral("cs.LG"));
+    v.setDiscipline(discipline);
+    v.setPublishedAt(QDateTime(QDate(2026, 8, 14), QTime(8, 0), QTimeZone::UTC));
+    v.setUrl(QStringLiteral("https://arxiv.org/abs/%1").arg(arxivId));
     return v;
 }
 
 int TestController::legeVeroeffentlichungAn(const QString &arxivId, const QString &title, Discipline discipline)
 {
-    Publication v = baueVeroeffentlichung(arxivId, title, discipline);
+    Publication v = buildPublication(arxivId, title, discipline);
     m_veroeffentlichungRepository->save(v);
     return v.id();
 }
@@ -242,7 +242,7 @@ void TestController::publications_zeigtHinweisWennDerFilterNichtsFindet()
 
 void TestController::abruf_speichertDieEmpfangenenArbeitenUndZeigtSieAn()
 {
-    const QList<Publication> vonArxiv = { baueVeroeffentlichung(QStringLiteral("2608.00001"), QStringLiteral("Neue Arbeit"), Discipline::ComputerScience) };
+    const QList<Publication> vonArxiv = { buildPublication(QStringLiteral("2608.00001"), QStringLiteral("Neue Arbeit"), Discipline::ComputerScience) };
     m_veroeffentlichungController->publicationsReceived(vonArxiv);
     QCOMPARE(m_veroeffentlichungRepository->count(), 1);
     QCOMPARE(m_veroeffentlichungsAnsicht.angezeigteVeroeffentlichungen.size(), 1);
@@ -250,7 +250,7 @@ void TestController::abruf_speichertDieEmpfangenenArbeitenUndZeigtSieAn()
 
 void TestController::abruf_legtBekannteArbeitenNichtDoppeltAn()
 {
-    const QList<Publication> vonArxiv = { baueVeroeffentlichung(QStringLiteral("2608.00001"), QStringLiteral("Neue Arbeit"), Discipline::ComputerScience) };
+    const QList<Publication> vonArxiv = { buildPublication(QStringLiteral("2608.00001"), QStringLiteral("Neue Arbeit"), Discipline::ComputerScience) };
     m_veroeffentlichungController->publicationsReceived(vonArxiv);
     m_veroeffentlichungController->publicationsReceived(vonArxiv);
     QCOMPARE(m_veroeffentlichungRepository->count(), 1);

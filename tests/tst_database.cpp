@@ -51,7 +51,7 @@ void TestDatenbank::erzeugeSchema_legtAlleTabellenAn()
     const QStringList tabellen = database.connection().tables();
     QVERIFY(tabellen.contains(QStringLiteral("user")));
     QVERIFY(tabellen.contains(QStringLiteral("publication")));
-    QVERIFY(tabellen.contains(QStringLiteral("leselisteneintrag")));
+    QVERIFY(tabellen.contains(QStringLiteral("reading_list_entry")));
 }
 
 void TestDatenbank::erzeugeSchema_istMehrfachAufrufbar()
@@ -68,12 +68,12 @@ void TestDatenbank::schema_benutzernameIstEindeutig()
     QVERIFY(database.open(Database::kInMemoryPath));
     QVERIFY(database.createSchema());
 
-    QSqlQuery abfrage(database.connection());
-    const QString einfuegen = QStringLiteral(
-        "INSERT INTO user (username, displayName, password_hash, salt, role, ist_aktiv) "
+    QSqlQuery query(database.connection());
+    const QString insertStatement = QStringLiteral(
+        "INSERT INTO user (username, displayName, password_hash, salt, role, is_active) "
         "VALUES ('ma01', 'Max', 'hash', 'salt', 'Employee', 1)");
-    QVERIFY(abfrage.exec(einfuegen));
-    QVERIFY(!abfrage.exec(einfuegen));
+    QVERIFY(query.exec(insertStatement));
+    QVERIFY(!query.exec(insertStatement));
 }
 
 void TestDatenbank::schema_arxivIdIstEindeutig()
@@ -82,13 +82,13 @@ void TestDatenbank::schema_arxivIdIstEindeutig()
     QVERIFY(database.open(Database::kInMemoryPath));
     QVERIFY(database.createSchema());
 
-    QSqlQuery abfrage(database.connection());
-    const QString einfuegen = QStringLiteral(
+    QSqlQuery query(database.connection());
+    const QString insertStatement = QStringLiteral(
         "INSERT INTO publication "
-        "(arxiv_id, title, authors, summary, arxiv_kategorie, discipline, veroeffentlicht_am, url) "
+        "(arxiv_id, title, authors, summary, arxiv_category, discipline, published_at, url) "
         "VALUES ('2608.01234', 'Title', 'A. Autor', 'Kurzfassung', 'cs.LG', 'ComputerScience', '2026-08-14T09:00:00Z', 'https://arxiv.org/abs/2608.01234')");
-    QVERIFY(abfrage.exec(einfuegen));
-    QVERIFY(!abfrage.exec(einfuegen));
+    QVERIFY(query.exec(insertStatement));
+    QVERIFY(!query.exec(insertStatement));
 }
 
 void TestDatenbank::schema_verhindertDoppeltenLeselisteneintrag()
@@ -97,20 +97,20 @@ void TestDatenbank::schema_verhindertDoppeltenLeselisteneintrag()
     QVERIFY(database.open(Database::kInMemoryPath));
     QVERIFY(database.createSchema());
 
-    QSqlQuery abfrage(database.connection());
-    QVERIFY(abfrage.exec(QStringLiteral(
-        "INSERT INTO user (username, displayName, password_hash, salt, role, ist_aktiv) "
+    QSqlQuery query(database.connection());
+    QVERIFY(query.exec(QStringLiteral(
+        "INSERT INTO user (username, displayName, password_hash, salt, role, is_active) "
         "VALUES ('ma01', 'Max', 'hash', 'salt', 'Employee', 1)")));
-    QVERIFY(abfrage.exec(QStringLiteral(
+    QVERIFY(query.exec(QStringLiteral(
         "INSERT INTO publication "
-        "(arxiv_id, title, authors, summary, arxiv_kategorie, discipline, veroeffentlicht_am, url) "
+        "(arxiv_id, title, authors, summary, arxiv_category, discipline, published_at, url) "
         "VALUES ('2608.01234', 'Title', 'A. Autor', 'Kurzfassung', 'cs.LG', 'ComputerScience', '2026-08-14T09:00:00Z', 'https://arxiv.org/abs/2608.01234')")));
 
-    const QString einfuegen = QStringLiteral(
-        "INSERT INTO leselisteneintrag (user_id, publication_id, status, rating, note, erstellt_am, geaendert_am) "
+    const QString insertStatement = QStringLiteral(
+        "INSERT INTO reading_list_entry (user_id, publication_id, status, rating, note, created_at, changed_at) "
         "VALUES (1, 1, 'Noted', NULL, '', '2026-08-14T09:00:00Z', '2026-08-14T09:00:00Z')");
-    QVERIFY(abfrage.exec(einfuegen));
-    QVERIFY(!abfrage.exec(einfuegen));
+    QVERIFY(query.exec(insertStatement));
+    QVERIFY(!query.exec(insertStatement));
 }
 
 void TestDatenbank::schema_loeschtEintraegeMitDerVeroeffentlichung()
@@ -119,10 +119,10 @@ void TestDatenbank::schema_loeschtEintraegeMitDerVeroeffentlichung()
     QVERIFY(database.open(Database::kInMemoryPath));
     QVERIFY(database.createSchema());
 
-    QSqlQuery abfrage(database.connection());
-    QVERIFY(abfrage.exec(QStringLiteral("PRAGMA foreign_keys")));
-    QVERIFY(abfrage.next());
-    QCOMPARE(abfrage.value(0).toInt(), 1);
+    QSqlQuery query(database.connection());
+    QVERIFY(query.exec(QStringLiteral("PRAGMA foreign_keys")));
+    QVERIFY(query.next());
+    QCOMPARE(query.value(0).toInt(), 1);
 }
 
 QTEST_GUILESS_MAIN(TestDatenbank)

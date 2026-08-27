@@ -2,7 +2,7 @@
 // Test: ArxivScheduler (US-09, automatischer taeglicher Abruf um 7 Uhr)
 //
 // Getestet wird ausschliesslich die deterministische Zeitlogik (istFaelig
-// und checkNow mit einem erfundenen timestamp). start() haengt von der
+// und checkNow mit einem erfundenen timestamp). start() haengt from der
 // echten Wanduhr ab und wird bewusst nicht unit-getestet -- das kann nur
 // durch tatsaechliches Laufenlassen der Anwendung geprueft werden.
 // ---------------------------------------------------------------------------
@@ -120,7 +120,7 @@ void TestArxivZeitplaner::pruefeJetzt_merktSichDenTagDesAusgeloestenAbrufs()
 void TestArxivZeitplaner::konstruktor_erlaubtEineAndereAbrufzeitAlsDenStandard()
 {
     // Nicht Teil des Auftrags, aber die Klasse soll nicht auf 7 Uhr
-    // hartkodiert sein -- das haette einen kuenftigen Wunsch nach einer
+    // hartkodiert sein -- das haette einen kuenftigen Wunsch to einer
     // anderen Uhrzeit unnoetig teuer gemacht.
     ArxivScheduler zeitplaner(QTime(12, 0));
     QVERIFY(!zeitplaner.checkNow(QDateTime(QDate(2026, 8, 21), QTime(11, 59))));

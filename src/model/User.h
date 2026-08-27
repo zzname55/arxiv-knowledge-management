@@ -14,22 +14,22 @@ public:
     User() = default;
 
     int id() const { return m_id; }
-    void setzeId(int id) { m_id = id; }
+    void setId(int id) { m_id = id; }
 
     QString username() const { return m_username; }
-    void setzeBenutzername(const QString &username) { m_username = username; }
+    void setUsername(const QString &username) { m_username = username; }
 
     QString displayName() const { return m_anzeigename; }
-    void setzeAnzeigename(const QString &displayName) { m_anzeigename = displayName; }
+    void setDisplayName(const QString &displayName) { m_anzeigename = displayName; }
 
     UserRole role() const { return m_role; }
-    void setzeRolle(UserRole role) { m_role = role; }
+    void setRole(UserRole role) { m_role = role; }
 
-    QString passwortHash() const { return m_passwortHash; }
-    void setzePasswortHash(const QString &hash) { m_passwortHash = hash; }
+    QString passwordHash() const { return m_passwortHash; }
+    void setPasswordHash(const QString &hash) { m_passwortHash = hash; }
 
     QString salt() const { return m_salt; }
-    void setzeSalt(const QString &salt) { m_salt = salt; }
+    void setSalt(const QString &salt) { m_salt = salt; }
 
     bool isActive() const { return m_istAktiv; }
     void setActive(bool aktiv) { m_istAktiv = aktiv; }

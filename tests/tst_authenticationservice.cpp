@@ -47,12 +47,12 @@ void TestAuthentifizierungsService::legeTestbenutzerAn(int id, const QString &us
     const QString salt = PasswordHasher::generateSalt();
 
     User user;
-    user.setzeId(id);
-    user.setzeBenutzername(username);
-    user.setzeAnzeigename(username.toUpper());
-    user.setzeRolle(role);
-    user.setzeSalt(salt);
-    user.setzePasswortHash(PasswordHasher::hash(password, salt));
+    user.setId(id);
+    user.setUsername(username);
+    user.setDisplayName(username.toUpper());
+    user.setRole(role);
+    user.setSalt(salt);
+    user.setPasswordHash(PasswordHasher::hash(password, salt));
     user.setActive(aktiv);
 
     m_repository.fuegeEinFuerTest(user);
@@ -78,7 +78,7 @@ void TestAuthentifizierungsService::anmelden_scheitertBeiFalschemPasswort()
 {
     const AnmeldeErgebnis result = m_service->login(QStringLiteral("ma01"), QStringLiteral("falsch999"));
     QVERIFY(!result.successful);
-    QCOMPARE(result.errorMessage, QStringLiteral("Username oder Password ist falsch."));
+    QCOMPARE(result.errorMessage, QStringLiteral("Username or password is incorrect."));
     QVERIFY(!m_service->isLoggedIn());
 }
 
@@ -100,21 +100,21 @@ void TestAuthentifizierungsService::anmelden_scheitertBeiLeeremBenutzernamen()
 {
     const AnmeldeErgebnis result = m_service->login(QString(), QStringLiteral("start1234"));
     QVERIFY(!result.successful);
-    QCOMPARE(result.errorMessage, QStringLiteral("Bitte Username und Password eingeben."));
+    QCOMPARE(result.errorMessage, QStringLiteral("Please enter a username and password."));
 }
 
 void TestAuthentifizierungsService::anmelden_scheitertBeiLeeremPasswort()
 {
     const AnmeldeErgebnis result = m_service->login(QStringLiteral("ma01"), QString());
     QVERIFY(!result.successful);
-    QCOMPARE(result.errorMessage, QStringLiteral("Bitte Username und Password eingeben."));
+    QCOMPARE(result.errorMessage, QStringLiteral("Please enter a username and password."));
 }
 
 void TestAuthentifizierungsService::anmelden_scheitertBeiDeaktiviertemKonto()
 {
     const AnmeldeErgebnis result = m_service->login(QStringLiteral("alt01"), QStringLiteral("start1234"));
     QVERIFY(!result.successful);
-    QCOMPARE(result.errorMessage, QStringLiteral("Dieses Benutzerkonto ist deaktiviert."));
+    QCOMPARE(result.errorMessage, QStringLiteral("This account is deactivated."));
     QVERIFY(!m_service->isLoggedIn());
 }
 

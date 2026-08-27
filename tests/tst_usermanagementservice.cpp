@@ -81,8 +81,8 @@ void TestBenutzerverwaltungsService::benutzerAnlegen_legtKontoMitGehashtemPasswo
     QCOMPARE(angelegt->displayName(), QStringLiteral("Mia Meier"));
     QCOMPARE(angelegt->role(), UserRole::Employee);
     QVERIFY(angelegt->isActive());
-    QVERIFY(!angelegt->passwortHash().contains(QStringLiteral("geheim1234")));
-    QVERIFY(PasswordHasher::verify(QStringLiteral("geheim1234"), angelegt->salt(), angelegt->passwortHash()));
+    QVERIFY(!angelegt->passwordHash().contains(QStringLiteral("geheim1234")));
+    QVERIFY(PasswordHasher::verify(QStringLiteral("geheim1234"), angelegt->salt(), angelegt->passwordHash()));
 }
 
 void TestBenutzerverwaltungsService::benutzerAnlegen_lehntVergebenenBenutzernamenAb()
@@ -137,7 +137,7 @@ void TestBenutzerverwaltungsService::benutzerAnlegen_vergibtJeKontoEinenEigenenS
     const auto ersterBenutzer  = m_repository->findByUsername(QStringLiteral("ma03")).value();
     const auto zweiterBenutzer = m_repository->findByUsername(QStringLiteral("ma04")).value();
     QVERIFY(ersterBenutzer.salt() != zweiterBenutzer.salt());
-    QVERIFY(ersterBenutzer.passwortHash() != zweiterBenutzer.passwortHash());
+    QVERIFY(ersterBenutzer.passwordHash() != zweiterBenutzer.passwordHash());
 }
 
 void TestBenutzerverwaltungsService::rolleAendern_setztDieNeueRolle()

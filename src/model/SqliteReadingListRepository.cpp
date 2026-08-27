@@ -10,13 +10,13 @@ namespace {
 
 const QString kBaseQuery = QStringLiteral(R"SQL(
 SELECT l.id, l.user_id, l.publication_id, l.status, l.rating,
-       l.note, l.erstellt_am, l.geaendert_am, b.displayName, v.title
-FROM leselisteneintrag l
+       l.note, l.created_at, l.changed_at, b.displayName, v.title
+FROM reading_list_entry l
 JOIN user          b ON b.id = l.user_id
 JOIN publication v ON v.id = l.publication_id
 )SQL");
 
-const QString kOrdering = QStringLiteral("ORDER BY l.erstellt_am DESC, l.id DESC");
+const QString kOrdering = QStringLiteral("ORDER BY l.created_at DESC, l.id DESC");
 
 /// Wandelt eine "null"-Zeichenkette in eine leere um. Ein default-konstruiertes
 /// QString ist NULL, nicht leer, und wuerde als SQL-NULL gebunden werden --
@@ -34,39 +34,39 @@ SqliteReadingListRepository::SqliteReadingListRepository(Database &database)
 {
 }
 
-ReadingListEntry SqliteReadingListRepository::fromQuery(const QSqlQuery &abfrage)
+ReadingListEntry SqliteReadingListRepository::fromQuery(const QSqlQuery &query)
 {
     ReadingListEntry entry;
-    entry.setzeId(abfrage.value(0).toInt());
-    entry.setzeBenutzerId(abfrage.value(1).toInt());
-    entry.setzeVeroeffentlichungId(abfrage.value(2).toInt());
+    entry.setId(query.value(0).toInt());
+    entry.setUserId(query.value(1).toInt());
+    entry.setPublicationId(query.value(2).toInt());
 
-    const std::optional<ReadingStatus> status = readingStatusFromText(abfrage.value(3).toString());
+    const std::optional<ReadingStatus> status = readingStatusFromText(query.value(3).toString());
     if (status.has_value()) {
-        entry.setzeStatus(*status);
+        entry.setStatus(*status);
     }
 
-    const QVariant rating = abfrage.value(4);
-    entry.setzeBewertung(rating.isNull() ? std::nullopt : std::optional<int>(rating.toInt()));
+    const QVariant rating = query.value(4);
+    entry.setRating(rating.isNull() ? std::nullopt : std::optional<int>(rating.toInt()));
 
-    entry.setzeNotiz(abfrage.value(5).toString());
-    entry.setzeErstelltAm(QDateTime::fromString(abfrage.value(6).toString(), Qt::ISODate));
-    entry.setzeGeaendertAm(QDateTime::fromString(abfrage.value(7).toString(), Qt::ISODate));
-    entry.setzeBenutzerAnzeigename(abfrage.value(8).toString());
-    entry.setzeVeroeffentlichungTitel(abfrage.value(9).toString());
+    entry.setNote(query.value(5).toString());
+    entry.setCreatedAt(QDateTime::fromString(query.value(6).toString(), Qt::ISODate));
+    entry.setChangedAt(QDateTime::fromString(query.value(7).toString(), Qt::ISODate));
+    entry.setUserDisplayName(query.value(8).toString());
+    entry.setPublicationTitle(query.value(9).toString());
 
     return entry;
 }
 
-QList<ReadingListEntry> SqliteReadingListRepository::readList(QSqlQuery &abfrage) const
+QList<ReadingListEntry> SqliteReadingListRepository::readList(QSqlQuery &query) const
 {
     QList<ReadingListEntry> entries;
-    if (!abfrage.exec()) {
-        m_lastError = abfrage.lastError().text();
+    if (!query.exec()) {
+        m_lastError = query.lastError().text();
         return entries;
     }
-    while (abfrage.next()) {
-        entries.append(fromQuery(abfrage));
+    while (query.next()) {
+        entries.append(fromQuery(query));
     }
     return entries;
 }
@@ -75,64 +75,64 @@ std::optional<ReadingListEntry> SqliteReadingListRepository::findById(int id) co
 {
     m_lastError.clear();
 
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(kBaseQuery + QStringLiteral("WHERE l.id = :id"));
-    abfrage.bindValue(QStringLiteral(":id"), id);
+    QSqlQuery query(m_database.connection());
+    query.prepare(kBaseQuery + QStringLiteral("WHERE l.id = :id"));
+    query.bindValue(QStringLiteral(":id"), id);
 
-    if (!abfrage.exec()) {
-        m_lastError = abfrage.lastError().text();
+    if (!query.exec()) {
+        m_lastError = query.lastError().text();
         return std::nullopt;
     }
-    return abfrage.next() ? std::optional<ReadingListEntry>(fromQuery(abfrage)) : std::nullopt;
+    return query.next() ? std::optional<ReadingListEntry>(fromQuery(query)) : std::nullopt;
 }
 
 QList<ReadingListEntry> SqliteReadingListRepository::findForUser(int userId) const
 {
     m_lastError.clear();
 
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(kBaseQuery + QStringLiteral("WHERE l.user_id = :user_id ") + kOrdering);
-    abfrage.bindValue(QStringLiteral(":user_id"), userId);
+    QSqlQuery query(m_database.connection());
+    query.prepare(kBaseQuery + QStringLiteral("WHERE l.user_id = :user_id ") + kOrdering);
+    query.bindValue(QStringLiteral(":user_id"), userId);
 
-    return readList(abfrage);
+    return readList(query);
 }
 
 QList<ReadingListEntry> SqliteReadingListRepository::findAll() const
 {
     m_lastError.clear();
 
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(kBaseQuery + kOrdering);
+    QSqlQuery query(m_database.connection());
+    query.prepare(kBaseQuery + kOrdering);
 
-    return readList(abfrage);
+    return readList(query);
 }
 
 QList<ReadingListEntry> SqliteReadingListRepository::findByStatus(ReadingStatus status) const
 {
     m_lastError.clear();
 
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(kBaseQuery + QStringLiteral("WHERE l.status = :status ") + kOrdering);
-    abfrage.bindValue(QStringLiteral(":status"), readingStatusToText(status));
+    QSqlQuery query(m_database.connection());
+    query.prepare(kBaseQuery + QStringLiteral("WHERE l.status = :status ") + kOrdering);
+    query.bindValue(QStringLiteral(":status"), readingStatusToText(status));
 
-    return readList(abfrage);
+    return readList(query);
 }
 
 bool SqliteReadingListRepository::entryExists(int userId, int publicationId) const
 {
     m_lastError.clear();
 
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(QStringLiteral(
-        "SELECT 1 FROM leselisteneintrag WHERE user_id = :user_id AND publication_id = :publication_id"));
-    abfrage.bindValue(QStringLiteral(":user_id"),          userId);
-    abfrage.bindValue(QStringLiteral(":publication_id"), publicationId);
+    QSqlQuery query(m_database.connection());
+    query.prepare(QStringLiteral(
+        "SELECT 1 FROM reading_list_entry WHERE user_id = :user_id AND publication_id = :publication_id"));
+    query.bindValue(QStringLiteral(":user_id"),          userId);
+    query.bindValue(QStringLiteral(":publication_id"), publicationId);
 
-    if (!abfrage.exec()) {
-        m_lastError = abfrage.lastError().text();
+    if (!query.exec()) {
+        m_lastError = query.lastError().text();
         return false;
     }
-    return abfrage.next();
+    return query.next();
 }
 
 bool SqliteReadingListRepository::save(ReadingListEntry &entry)
@@ -143,49 +143,49 @@ bool SqliteReadingListRepository::save(ReadingListEntry &entry)
 
 bool SqliteReadingListRepository::insert(ReadingListEntry &entry)
 {
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(QStringLiteral(
-        "INSERT INTO leselisteneintrag "
-        "(user_id, publication_id, status, rating, note, erstellt_am, geaendert_am) "
-        "VALUES (:user_id, :publication_id, :status, :rating, :note, :erstellt_am, :geaendert_am)"));
+    QSqlQuery query(m_database.connection());
+    query.prepare(QStringLiteral(
+        "INSERT INTO reading_list_entry "
+        "(user_id, publication_id, status, rating, note, created_at, changed_at) "
+        "VALUES (:user_id, :publication_id, :status, :rating, :note, :created_at, :changed_at)"));
 
-    abfrage.bindValue(QStringLiteral(":user_id"),          entry.userId());
-    abfrage.bindValue(QStringLiteral(":publication_id"), entry.publicationId());
-    abfrage.bindValue(QStringLiteral(":status"),               readingStatusToText(entry.status()));
-    abfrage.bindValue(QStringLiteral(":rating"),
+    query.bindValue(QStringLiteral(":user_id"),          entry.userId());
+    query.bindValue(QStringLiteral(":publication_id"), entry.publicationId());
+    query.bindValue(QStringLiteral(":status"),               readingStatusToText(entry.status()));
+    query.bindValue(QStringLiteral(":rating"),
                       entry.rating().has_value() ? QVariant(*entry.rating()) : QVariant());
-    abfrage.bindValue(QStringLiteral(":note"),                withoutNullValue(entry.note()));
-    abfrage.bindValue(QStringLiteral(":erstellt_am"),  entry.createdAt().toUTC().toString(Qt::ISODate));
-    abfrage.bindValue(QStringLiteral(":geaendert_am"), entry.changedAt().toUTC().toString(Qt::ISODate));
+    query.bindValue(QStringLiteral(":note"),                withoutNullValue(entry.note()));
+    query.bindValue(QStringLiteral(":created_at"),  entry.createdAt().toUTC().toString(Qt::ISODate));
+    query.bindValue(QStringLiteral(":changed_at"), entry.changedAt().toUTC().toString(Qt::ISODate));
 
-    if (!abfrage.exec()) {
-        m_lastError = QStringLiteral("Der Leselisteneintrag konnte nicht angelegt werden: %1").arg(abfrage.lastError().text());
+    if (!query.exec()) {
+        m_lastError = QStringLiteral("The reading list entry could not be created: %1").arg(query.lastError().text());
         return false;
     }
 
-    entry.setzeId(abfrage.lastInsertId().toInt());
+    entry.setId(query.lastInsertId().toInt());
     return true;
 }
 
 bool SqliteReadingListRepository::update(const ReadingListEntry &entry)
 {
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(QStringLiteral(
-        "UPDATE leselisteneintrag SET status       = :status, "
+    QSqlQuery query(m_database.connection());
+    query.prepare(QStringLiteral(
+        "UPDATE reading_list_entry SET status       = :status, "
         "                             rating    = :rating, "
         "                             note        = :note, "
-        "                             geaendert_am = :geaendert_am "
+        "                             changed_at = :changed_at "
         "WHERE id = :id"));
 
-    abfrage.bindValue(QStringLiteral(":status"), readingStatusToText(entry.status()));
-    abfrage.bindValue(QStringLiteral(":rating"),
+    query.bindValue(QStringLiteral(":status"), readingStatusToText(entry.status()));
+    query.bindValue(QStringLiteral(":rating"),
                       entry.rating().has_value() ? QVariant(*entry.rating()) : QVariant());
-    abfrage.bindValue(QStringLiteral(":note"), withoutNullValue(entry.note()));
-    abfrage.bindValue(QStringLiteral(":geaendert_am"), entry.changedAt().toUTC().toString(Qt::ISODate));
-    abfrage.bindValue(QStringLiteral(":id"), entry.id());
+    query.bindValue(QStringLiteral(":note"), withoutNullValue(entry.note()));
+    query.bindValue(QStringLiteral(":changed_at"), entry.changedAt().toUTC().toString(Qt::ISODate));
+    query.bindValue(QStringLiteral(":id"), entry.id());
 
-    if (!abfrage.exec()) {
-        m_lastError = QStringLiteral("Der Leselisteneintrag konnte nicht geaendert werden: %1").arg(abfrage.lastError().text());
+    if (!query.exec()) {
+        m_lastError = QStringLiteral("The reading list entry could not be updated: %1").arg(query.lastError().text());
         return false;
     }
     return true;
@@ -195,12 +195,12 @@ bool SqliteReadingListRepository::remove(int id)
 {
     m_lastError.clear();
 
-    QSqlQuery abfrage(m_database.connection());
-    abfrage.prepare(QStringLiteral("DELETE FROM leselisteneintrag WHERE id = :id"));
-    abfrage.bindValue(QStringLiteral(":id"), id);
+    QSqlQuery query(m_database.connection());
+    query.prepare(QStringLiteral("DELETE FROM reading_list_entry WHERE id = :id"));
+    query.bindValue(QStringLiteral(":id"), id);
 
-    if (!abfrage.exec()) {
-        m_lastError = QStringLiteral("Der Leselisteneintrag konnte nicht entfernt werden: %1").arg(abfrage.lastError().text());
+    if (!query.exec()) {
+        m_lastError = QStringLiteral("The reading list entry could not be removed: %1").arg(query.lastError().text());
         return false;
     }
     return true;

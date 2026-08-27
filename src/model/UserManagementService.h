@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // UserManagementService — MVC layer: MODEL
-// Anlegen, Aendern, Sperren von Konten (US-08). Passwoerter werden sofort
+// Anlegen, Aendern, Sperren from Konten (US-08). Passwoerter werden sofort
 // mit frischem Salt gehasht.
 // ---------------------------------------------------------------------------
 #pragma once
