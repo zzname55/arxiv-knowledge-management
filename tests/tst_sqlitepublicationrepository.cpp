@@ -2,6 +2,8 @@
 // Test: SqlitePublicationRepository
 // ---------------------------------------------------------------------------
 #include <QtTest>
+#include <QSqlError>
+#include <QSqlQuery>
 #include <memory>
 #include "model/Database.h"
 #include "model/SqlitePublicationRepository.h"
@@ -27,13 +29,60 @@ private slots:
     void autoren_ueberstehenDenWegDurchDieDatenbank();
     void count_zaehltAlleEintraege();
 
+    void migrateOutdatedDisciplines_remapsLegacyLabelFromCategory();
+    void migrateOutdatedDisciplines_leavesValidLabelsUntouched();
+    void migrateOutdatedDisciplines_isIdempotent();
+    void migrateOutdatedDisciplines_fallsBackToOtherForUnknownCategory();
+
 private:
     std::unique_ptr<Database>                         m_database;
     std::unique_ptr<SqlitePublicationRepository> m_repository;
 
     static Publication neueVeroeffentlichung(const QString &arxivId, const QString &title,
                                                    Discipline discipline, const QDateTime &publishedAt);
+
+    /// Writes a row carrying an arbitrary discipline text straight into the
+    /// table. Needed because the repository only ever stores valid
+    /// disciplines, while the migration case is precisely about legacy rows
+    /// holding text that no longer resolves.
+    void insertRowWithRawDisciplineText(const QString &arxivId, const QString &arxivCategory,
+                                        const QString &disciplineText);
+
+    /// Reads a row's raw discipline text back without going through the
+    /// repository's conversion.
+    QString rawDisciplineText(const QString &arxivId) const;
 };
+
+void TestSqliteVeroeffentlichungRepository::insertRowWithRawDisciplineText(
+    const QString &arxivId, const QString &arxivCategory, const QString &disciplineText)
+{
+    QSqlQuery query(m_database->connection());
+    query.prepare(QStringLiteral(
+        "INSERT INTO publication "
+        "(arxiv_id, title, authors, summary, arxiv_category, discipline, published_at, url) "
+        "VALUES (:arxiv_id, :title, :authors, :summary, :arxiv_category, :discipline, :published_at, :url)"));
+    query.bindValue(QStringLiteral(":arxiv_id"),       arxivId);
+    query.bindValue(QStringLiteral(":title"),          QStringLiteral("Legacy row %1").arg(arxivId));
+    query.bindValue(QStringLiteral(":authors"),        QStringLiteral("A. Autorin"));
+    query.bindValue(QStringLiteral(":summary"),        QStringLiteral("Kurzfassung."));
+    query.bindValue(QStringLiteral(":arxiv_category"), arxivCategory);
+    query.bindValue(QStringLiteral(":discipline"),     disciplineText);
+    query.bindValue(QStringLiteral(":published_at"),
+                    QDateTime(QDate(2026, 8, 26), QTime(8, 0), QTimeZone::UTC).toString(Qt::ISODate));
+    query.bindValue(QStringLiteral(":url"),            QStringLiteral("https://arxiv.org/abs/%1").arg(arxivId));
+    QVERIFY2(query.exec(), qPrintable(query.lastError().text()));
+}
+
+QString TestSqliteVeroeffentlichungRepository::rawDisciplineText(const QString &arxivId) const
+{
+    QSqlQuery query(m_database->connection());
+    query.prepare(QStringLiteral("SELECT discipline FROM publication WHERE arxiv_id = :arxiv_id"));
+    query.bindValue(QStringLiteral(":arxiv_id"), arxivId);
+    if (!query.exec() || !query.next()) {
+        return QString();
+    }
+    return query.value(0).toString();
+}
 
 Publication TestSqliteVeroeffentlichungRepository::neueVeroeffentlichung(
     const QString &arxivId, const QString &title, Discipline discipline, const QDateTime &publishedAt)
@@ -209,6 +258,67 @@ void TestSqliteVeroeffentlichungRepository::count_zaehltAlleEintraege()
                                                 Discipline::ComputerScience, QDateTime(QDate(2026, 8, 14), QTime(8, 0), QTimeZone::UTC));
     QVERIFY(m_repository->save(v));
     QCOMPARE(m_repository->count(), 1);
+}
+
+// ---------------------------------------------------------------------------
+// Migration of legacy rows
+//
+// The "discipline" column holds the display label. When the catch-all
+// discipline "Physics" was split into six real arXiv subfields, existing rows
+// carrying the old text lost their assignment and fell back to "Other" on
+// read. The raw category is still present in the "arxiv_category" column, so
+// the assignment can be restored from it without any network request.
+// ---------------------------------------------------------------------------
+
+void TestSqliteVeroeffentlichungRepository::migrateOutdatedDisciplines_remapsLegacyLabelFromCategory()
+{
+    insertRowWithRawDisciplineText(QStringLiteral("2608.00001"), QStringLiteral("cond-mat.str-el"),
+                                   QStringLiteral("Physik"));
+    insertRowWithRawDisciplineText(QStringLiteral("2608.00002"), QStringLiteral("quant-ph"),
+                                   QStringLiteral("Physik"));
+
+    QCOMPARE(m_repository->migrateOutdatedDisciplines(), 2);
+
+    const auto firstRow = m_repository->findByArxivId(QStringLiteral("2608.00001"));
+    QVERIFY(firstRow.has_value());
+    QCOMPARE(firstRow->discipline(), Discipline::CondensedMatterPhysics);
+
+    const auto secondRow = m_repository->findByArxivId(QStringLiteral("2608.00002"));
+    QVERIFY(secondRow.has_value());
+    QCOMPARE(secondRow->discipline(), Discipline::QuantumPhysicsAndGravitation);
+}
+
+void TestSqliteVeroeffentlichungRepository::migrateOutdatedDisciplines_leavesValidLabelsUntouched()
+{
+    Publication computerScience = neueVeroeffentlichung(QStringLiteral("2608.00001"), QStringLiteral("CS paper"),
+                                                        Discipline::ComputerScience, QDateTime(QDate(2026, 8, 14), QTime(8, 0), QTimeZone::UTC));
+    QVERIFY(m_repository->save(computerScience));
+
+    QCOMPARE(m_repository->migrateOutdatedDisciplines(), 0);
+    QCOMPARE(rawDisciplineText(QStringLiteral("2608.00001")), disciplineToText(Discipline::ComputerScience));
+}
+
+void TestSqliteVeroeffentlichungRepository::migrateOutdatedDisciplines_isIdempotent()
+{
+    insertRowWithRawDisciplineText(QStringLiteral("2608.00001"), QStringLiteral("astro-ph.GA"),
+                                   QStringLiteral("Physik"));
+
+    QCOMPARE(m_repository->migrateOutdatedDisciplines(), 1);
+    // The second run finds nothing left to correct.
+    QCOMPARE(m_repository->migrateOutdatedDisciplines(), 0);
+    QCOMPARE(rawDisciplineText(QStringLiteral("2608.00001")), disciplineToText(Discipline::Astrophysics));
+}
+
+void TestSqliteVeroeffentlichungRepository::migrateOutdatedDisciplines_fallsBackToOtherForUnknownCategory()
+{
+    // If the category cannot be mapped either, "Other" is all that remains.
+    // What matters is that a valid label ends up in the column afterwards.
+    insertRowWithRawDisciplineText(QStringLiteral("2608.00001"), QStringLiteral("xyz.ABC"),
+                                   QStringLiteral("Completely unknown"));
+
+    QCOMPARE(m_repository->migrateOutdatedDisciplines(), 1);
+    QCOMPARE(rawDisciplineText(QStringLiteral("2608.00001")), disciplineToText(Discipline::Other));
+    QCOMPARE(m_repository->migrateOutdatedDisciplines(), 0);
 }
 
 QTEST_GUILESS_MAIN(TestSqliteVeroeffentlichungRepository)

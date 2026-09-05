@@ -193,6 +193,50 @@ int SqlitePublicationRepository::count() const
     return query.value(0).toInt();
 }
 
+int SqlitePublicationRepository::migrateOutdatedDisciplines()
+{
+    m_lastError.clear();
+
+    // Collect first, write afterwards: an UPDATE issued while a SELECT on the
+    // same table is still open is not reliable on SQLite.
+    struct Correction {
+        int        id;
+        Discipline discipline;
+    };
+    QList<Correction> corrections;
+
+    QSqlQuery read(m_database.connection());
+    if (!read.exec(QStringLiteral("SELECT id, arxiv_category, discipline FROM publication"))) {
+        m_lastError = QStringLiteral("The disciplines could not be read: %1").arg(read.lastError().text());
+        return -1;
+    }
+
+    while (read.next()) {
+        // A resolvable label is valid and stays untouched. Only what can no
+        // longer be mapped originates from an older naming scheme.
+        if (disciplineFromText(read.value(2).toString()).has_value()) {
+            continue;
+        }
+        corrections.append({ read.value(0).toInt(),
+                             disciplineFromArxivCategory(read.value(1).toString()) });
+    }
+
+    for (const Correction &correction : corrections) {
+        QSqlQuery write(m_database.connection());
+        write.prepare(QStringLiteral("UPDATE publication SET discipline = :discipline WHERE id = :id"));
+        write.bindValue(QStringLiteral(":discipline"), disciplineToText(correction.discipline));
+        write.bindValue(QStringLiteral(":id"),         correction.id);
+
+        if (!write.exec()) {
+            m_lastError = QStringLiteral("The discipline of row %1 could not be corrected: %2")
+                              .arg(QString::number(correction.id), write.lastError().text());
+            return -1;
+        }
+    }
+
+    return static_cast<int>(corrections.size());
+}
+
 QString SqlitePublicationRepository::lastError() const
 {
     return m_lastError;

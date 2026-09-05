@@ -79,6 +79,13 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    // Repairs rows from an older discipline naming before any view reads them.
+    // A failure is not a startup error: the affected rows then keep showing
+    // "Other" and everything else works unchanged.
+    if (publicationRepository.migrateOutdatedDisciplines() < 0) {
+        qWarning("Migration of disciplines failed: %s", qPrintable(publicationRepository.lastError()));
+    }
+
     AuthenticationService  authentication(userRepository);
     ReadingListService     readingListService(readingListRepository, publicationRepository);
     UserManagementService  userManagementService(userRepository);
