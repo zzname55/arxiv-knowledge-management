@@ -148,7 +148,7 @@ void TestSqliteVeroeffentlichungRepository::findeNachDisziplin_liefertBeiAlleSae
     Publication informatik = neueVeroeffentlichung(QStringLiteral("2608.00001"), QStringLiteral("ComputerScience-Arbeit"),
                                                          Discipline::ComputerScience, QDateTime(QDate(2026, 8, 14), QTime(8, 0), QTimeZone::UTC));
     Publication physik = neueVeroeffentlichung(QStringLiteral("2608.00002"), QStringLiteral("Physics-Arbeit"),
-                                                     Discipline::Physics, QDateTime(QDate(2026, 8, 13), QTime(8, 0), QTimeZone::UTC));
+                                                     Discipline::GeneralPhysics, QDateTime(QDate(2026, 8, 13), QTime(8, 0), QTimeZone::UTC));
     QVERIFY(m_repository->save(informatik));
     QVERIFY(m_repository->save(physik));
 

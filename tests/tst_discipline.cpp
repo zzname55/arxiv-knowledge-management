@@ -30,13 +30,18 @@ private slots:
 void TestDisziplin::disziplinAlsText_liefertDeutscheBezeichnung()
 {
     QCOMPARE(disciplineToText(Discipline::Alle), QStringLiteral("All disciplines"));
-    QCOMPARE(disciplineToText(Discipline::ComputerScience), QStringLiteral("ComputerScience"));
+    QCOMPARE(disciplineToText(Discipline::ComputerScience), QStringLiteral("Computer Science"));
     QCOMPARE(disciplineToText(Discipline::Mathematics), QStringLiteral("Mathematics"));
-    QCOMPARE(disciplineToText(Discipline::Physics), QStringLiteral("Physics"));
+    QCOMPARE(disciplineToText(Discipline::Astrophysics), QStringLiteral("Astrophysics"));
+    QCOMPARE(disciplineToText(Discipline::CondensedMatterPhysics), QStringLiteral("Condensed Matter"));
+    QCOMPARE(disciplineToText(Discipline::HighEnergyPhysics), QStringLiteral("High-Energy Physics"));
+    QCOMPARE(disciplineToText(Discipline::QuantumPhysicsAndGravitation), QStringLiteral("Quantum Physics & Gravitation"));
+    QCOMPARE(disciplineToText(Discipline::MathematicalPhysics), QStringLiteral("Mathematical Physics"));
+    QCOMPARE(disciplineToText(Discipline::GeneralPhysics), QStringLiteral("General Physics"));
     QCOMPARE(disciplineToText(Discipline::Statistics), QStringLiteral("Statistics"));
-    QCOMPARE(disciplineToText(Discipline::QuantitativeBiology), QStringLiteral("Quantitative Biologie"));
+    QCOMPARE(disciplineToText(Discipline::QuantitativeBiology), QStringLiteral("Quantitative Biology"));
     QCOMPARE(disciplineToText(Discipline::Economics), QStringLiteral("Economics"));
-    QCOMPARE(disciplineToText(Discipline::ElectricalEngineering), QStringLiteral("ElectricalEngineering"));
+    QCOMPARE(disciplineToText(Discipline::ElectricalEngineering), QStringLiteral("Electrical Engineering"));
     QCOMPARE(disciplineToText(Discipline::Other), QStringLiteral("Other"));
 }
 
@@ -51,7 +56,7 @@ void TestDisziplin::umwandlung_istInBeideRichtungenVerlustfrei()
 void TestDisziplin::alleDisziplinen_enthaeltDieGefordertenEintraege()
 {
     const QList<Discipline> disziplinen = allDisciplines();
-    QVERIFY(disziplinen.size() >= 8);
+    QVERIFY(disziplinen.size() >= 13);
     QVERIFY(disziplinen.first() == Discipline::Alle);
 }
 
@@ -70,13 +75,14 @@ void TestDisziplin::ausArxivKategorie_erkenntMathematik()
 
 void TestDisziplin::ausArxivKategorie_erkenntPhysikAuchBeiSonderkuerzeln()
 {
-    QCOMPARE(disciplineFromArxivCategory(QStringLiteral("physics.optics")), Discipline::Physics);
-    QCOMPARE(disciplineFromArxivCategory(QStringLiteral("astro-ph.GA")), Discipline::Physics);
-    QCOMPARE(disciplineFromArxivCategory(QStringLiteral("cond-mat.str-el")), Discipline::Physics);
-    QCOMPARE(disciplineFromArxivCategory(QStringLiteral("quant-ph")), Discipline::Physics);
-    QCOMPARE(disciplineFromArxivCategory(QStringLiteral("hep-th")), Discipline::Physics);
-    QCOMPARE(disciplineFromArxivCategory(QStringLiteral("gr-qc")), Discipline::Physics);
-    QCOMPARE(disciplineFromArxivCategory(QStringLiteral("nucl-ex")), Discipline::Physics);
+    QCOMPARE(disciplineFromArxivCategory(QStringLiteral("physics.optics")), Discipline::GeneralPhysics);
+    QCOMPARE(disciplineFromArxivCategory(QStringLiteral("astro-ph.GA")), Discipline::Astrophysics);
+    QCOMPARE(disciplineFromArxivCategory(QStringLiteral("cond-mat.str-el")), Discipline::CondensedMatterPhysics);
+    QCOMPARE(disciplineFromArxivCategory(QStringLiteral("quant-ph")), Discipline::QuantumPhysicsAndGravitation);
+    QCOMPARE(disciplineFromArxivCategory(QStringLiteral("hep-th")), Discipline::HighEnergyPhysics);
+    QCOMPARE(disciplineFromArxivCategory(QStringLiteral("gr-qc")), Discipline::QuantumPhysicsAndGravitation);
+    QCOMPARE(disciplineFromArxivCategory(QStringLiteral("nucl-ex")), Discipline::GeneralPhysics);
+    QCOMPARE(disciplineFromArxivCategory(QStringLiteral("math-ph")), Discipline::MathematicalPhysics);
 }
 
 void TestDisziplin::ausArxivKategorie_erkenntStatistikBiologieWirtschaftElektrotechnik()
@@ -108,13 +114,13 @@ void TestDisziplin::abfrageUrl_zeigtAufDieOffizielleApi()
 
 void TestDisziplin::abfrageUrl_begrenztAufFuenfTreffer()
 {
-    const QUrlQuery query(buildArxivQueryUrl(Discipline::Alle, 5));
-    QCOMPARE(query.queryItemValue(QStringLiteral("max_results")), QStringLiteral("5"));
+    const QUrlQuery query(buildArxivQueryUrl(Discipline::Alle, 15));
+    QCOMPARE(query.queryItemValue(QStringLiteral("max_results")), QStringLiteral("15"));
 }
 
 void TestDisziplin::abfrageUrl_sortiertNachEinreichungsdatumAbsteigend()
 {
-    const QUrlQuery query(buildArxivQueryUrl(Discipline::Alle, 5));
+    const QUrlQuery query(buildArxivQueryUrl(Discipline::Alle, 15));
     QCOMPARE(query.queryItemValue(QStringLiteral("sortBy")), QStringLiteral("submittedDate"));
     QCOMPARE(query.queryItemValue(QStringLiteral("sortOrder")), QStringLiteral("descending"));
 }
@@ -129,11 +135,13 @@ void TestDisziplin::abfrageUrl_beschraenktAufDieGewaehlteDisziplin()
 
 void TestDisziplin::abfrageUrl_umfasstBeiAlleDisziplinenMehrereKategorien()
 {
-    const QUrlQuery query(buildArxivQueryUrl(Discipline::Alle, 5));
+    const QUrlQuery query(buildArxivQueryUrl(Discipline::Alle, 15));
     const QString suchbegriff = query.queryItemValue(QStringLiteral("search_query"), QUrl::FullyDecoded);
     QVERIFY(suchbegriff.contains(QStringLiteral("cat:cs")));
     QVERIFY(suchbegriff.contains(QStringLiteral("cat:math")));
     QVERIFY(suchbegriff.contains(QStringLiteral("cat:physics")));
+    QVERIFY(suchbegriff.contains(QStringLiteral("cat:quant-ph")));
+    QVERIFY(!suchbegriff.contains(QStringLiteral("cat:quant-ph.*")));
     QVERIFY(suchbegriff.contains(QStringLiteral("OR")));
 }
 

@@ -13,7 +13,12 @@ enum class Discipline {
     Alle,
     ComputerScience,
     Mathematics,
-    Physics,
+    Astrophysics,
+    CondensedMatterPhysics,
+    HighEnergyPhysics,
+    QuantumPhysicsAndGravitation,
+    MathematicalPhysics,
+    GeneralPhysics,
     Statistics,
     QuantitativeBiology,
     Economics,
@@ -31,4 +36,4 @@ Discipline disciplineFromArxivCategory(const QString &arxivCategory);
 /// Baut die Abfrage-URL fuer die arXiv-API, sortiert to Einreichungsdatum absteigend.
 QUrl buildArxivQueryUrl(Discipline discipline, int maxResults);
 
-inline constexpr int kDefaultResultCount = 5;
+inline constexpr int kDefaultResultCount = 15;

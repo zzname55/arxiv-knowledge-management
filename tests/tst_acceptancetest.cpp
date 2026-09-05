@@ -289,7 +289,7 @@ void TestAbnahme::t06_veroeffentlichungenErscheinenInDerListe()
     QVERIFY(tabelle != nullptr);
     QCOMPARE(tabelle->rowCount(), 1);
     QCOMPARE(tabelle->item(0, 0)->text(), QStringLiteral("Schnelle Aufmerksamkeit"));
-    QCOMPARE(tabelle->item(0, 1)->text(), QStringLiteral("ComputerScience"));
+    QCOMPARE(tabelle->item(0, 1)->text(), QStringLiteral("Computer Science"));
 
     auto *trefferAnzeige = finde<QLabel>(m_veroeffentlichungView.get(), QStringLiteral("trefferAnzeige"));
     QVERIFY(trefferAnzeige->text().contains(QStringLiteral("1 of 1")));
@@ -322,7 +322,7 @@ void TestAbnahme::t08_filterOhneTrefferZeigtEinenHinweis()
     legeVeroeffentlichungAn(QStringLiteral("2608.00001"), QStringLiteral("ComputerScience-Arbeit"), Discipline::ComputerScience);
 
     auto *disziplinAuswahl = finde<QComboBox>(m_veroeffentlichungView.get(), QStringLiteral("disziplinAuswahl"));
-    disziplinAuswahl->setCurrentIndex(disziplinAuswahl->findText(QStringLiteral("Quantitative Biologie")));
+    disziplinAuswahl->setCurrentIndex(disziplinAuswahl->findText(QStringLiteral("Quantitative Biology")));
 
     auto *tabelle = finde<QTableWidget>(m_veroeffentlichungView.get(), QStringLiteral("veroeffentlichungTabelle"));
     QCOMPARE(tabelle->rowCount(), 0);
@@ -354,7 +354,7 @@ void TestAbnahme::t10_auswahlZeigtAlleAngabenZurVeroeffentlichung()
     const QString angezeigterText = detailAnzeige->toPlainText();
     QVERIFY(angezeigterText.contains(QStringLiteral("Eine Arbeit")));
     QVERIFY(angezeigterText.contains(QStringLiteral("Ada Lovelace")));
-    QVERIFY(angezeigterText.contains(QStringLiteral("ComputerScience")));
+    QVERIFY(angezeigterText.contains(QStringLiteral("Computer Science")));
     QVERIFY(angezeigterText.contains(QStringLiteral("2608.00001")));
     QVERIFY(angezeigterText.contains(QStringLiteral("Beschleunigung")));
 

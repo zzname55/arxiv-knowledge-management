@@ -6,26 +6,31 @@
 
 namespace {
 
-const QString kApiAddress = QStringLiteral("https://export.arxiv.org/api/query");
+const QString kApiAdresse = QStringLiteral("https://export.arxiv.org/api/query");
 
+// arXiv does not run "Physics" as a single archive -- it is twelve separate
+// archives (astro-ph, cond-mat, gr-qc, hep-ex, hep-lat, hep-ph, hep-th,
+// math-ph, nlin, nucl-ex, nucl-th, physics, quant-ph). The original single
+// "Physics" discipline is split here into six real subfields instead of
+// bundling them behind one artificial umbrella term.
 const QHash<QString, Discipline> &prefixMapping()
 {
     static const QHash<QString, Discipline> zuordnung = {
         { QStringLiteral("cs"),        Discipline::ComputerScience },
         { QStringLiteral("math"),      Discipline::Mathematics },
-        { QStringLiteral("physics"),   Discipline::Physics },
-        { QStringLiteral("astro-ph"),  Discipline::Physics },
-        { QStringLiteral("cond-mat"),  Discipline::Physics },
-        { QStringLiteral("gr-qc"),     Discipline::Physics },
-        { QStringLiteral("hep-ex"),    Discipline::Physics },
-        { QStringLiteral("hep-lat"),   Discipline::Physics },
-        { QStringLiteral("hep-ph"),    Discipline::Physics },
-        { QStringLiteral("hep-th"),    Discipline::Physics },
-        { QStringLiteral("math-ph"),   Discipline::Physics },
-        { QStringLiteral("nlin"),      Discipline::Physics },
-        { QStringLiteral("nucl-ex"),   Discipline::Physics },
-        { QStringLiteral("nucl-th"),   Discipline::Physics },
-        { QStringLiteral("quant-ph"),  Discipline::Physics },
+        { QStringLiteral("astro-ph"),  Discipline::Astrophysics },
+        { QStringLiteral("cond-mat"),  Discipline::CondensedMatterPhysics },
+        { QStringLiteral("hep-ex"),    Discipline::HighEnergyPhysics },
+        { QStringLiteral("hep-lat"),   Discipline::HighEnergyPhysics },
+        { QStringLiteral("hep-ph"),    Discipline::HighEnergyPhysics },
+        { QStringLiteral("hep-th"),    Discipline::HighEnergyPhysics },
+        { QStringLiteral("quant-ph"),  Discipline::QuantumPhysicsAndGravitation },
+        { QStringLiteral("gr-qc"),     Discipline::QuantumPhysicsAndGravitation },
+        { QStringLiteral("math-ph"),   Discipline::MathematicalPhysics },
+        { QStringLiteral("nlin"),      Discipline::MathematicalPhysics },
+        { QStringLiteral("physics"),   Discipline::GeneralPhysics },
+        { QStringLiteral("nucl-ex"),   Discipline::GeneralPhysics },
+        { QStringLiteral("nucl-th"),   Discipline::GeneralPhysics },
         { QStringLiteral("stat"),      Discipline::Statistics },
         { QStringLiteral("q-bio"),     Discipline::QuantitativeBiology },
         { QStringLiteral("q-fin"),     Discipline::Economics },
@@ -42,10 +47,19 @@ QStringList searchPrefixes(Discipline discipline)
         return { QStringLiteral("cs") };
     case Discipline::Mathematics:
         return { QStringLiteral("math") };
-    case Discipline::Physics:
-        return { QStringLiteral("physics"), QStringLiteral("astro-ph"),
-                 QStringLiteral("cond-mat"), QStringLiteral("quant-ph"),
-                 QStringLiteral("hep-th"), QStringLiteral("gr-qc") };
+    case Discipline::Astrophysics:
+        return { QStringLiteral("astro-ph") };
+    case Discipline::CondensedMatterPhysics:
+        return { QStringLiteral("cond-mat") };
+    case Discipline::HighEnergyPhysics:
+        return { QStringLiteral("hep-ex"), QStringLiteral("hep-lat"),
+                 QStringLiteral("hep-ph"), QStringLiteral("hep-th") };
+    case Discipline::QuantumPhysicsAndGravitation:
+        return { QStringLiteral("quant-ph"), QStringLiteral("gr-qc") };
+    case Discipline::MathematicalPhysics:
+        return { QStringLiteral("math-ph"), QStringLiteral("nlin") };
+    case Discipline::GeneralPhysics:
+        return { QStringLiteral("physics"), QStringLiteral("nucl-ex"), QStringLiteral("nucl-th") };
     case Discipline::Statistics:
         return { QStringLiteral("stat") };
     case Discipline::QuantitativeBiology:
@@ -73,15 +87,20 @@ QStringList searchPrefixes(Discipline discipline)
 QString disciplineToText(Discipline discipline)
 {
     switch (discipline) {
-    case Discipline::Alle:                      return QStringLiteral("All disciplines");
-    case Discipline::ComputerScience:                return QStringLiteral("ComputerScience");
-    case Discipline::Mathematics:                return QStringLiteral("Mathematics");
-    case Discipline::Physics:                    return QStringLiteral("Physics");
-    case Discipline::Statistics:                 return QStringLiteral("Statistics");
-    case Discipline::QuantitativeBiology:      return QStringLiteral("Quantitative Biologie");
-    case Discipline::Economics: return QStringLiteral("Economics");
-    case Discipline::ElectricalEngineering:            return QStringLiteral("ElectricalEngineering");
-    case Discipline::Other:                  return QStringLiteral("Other");
+    case Discipline::Alle:                          return QStringLiteral("All disciplines");
+    case Discipline::ComputerScience:                return QStringLiteral("Computer Science");
+    case Discipline::Mathematics:                    return QStringLiteral("Mathematics");
+    case Discipline::Astrophysics:                   return QStringLiteral("Astrophysics");
+    case Discipline::CondensedMatterPhysics:         return QStringLiteral("Condensed Matter");
+    case Discipline::HighEnergyPhysics:              return QStringLiteral("High-Energy Physics");
+    case Discipline::QuantumPhysicsAndGravitation:   return QStringLiteral("Quantum Physics & Gravitation");
+    case Discipline::MathematicalPhysics:            return QStringLiteral("Mathematical Physics");
+    case Discipline::GeneralPhysics:                 return QStringLiteral("General Physics");
+    case Discipline::Statistics:                     return QStringLiteral("Statistics");
+    case Discipline::QuantitativeBiology:            return QStringLiteral("Quantitative Biology");
+    case Discipline::Economics:                      return QStringLiteral("Economics");
+    case Discipline::ElectricalEngineering:          return QStringLiteral("Electrical Engineering");
+    case Discipline::Other:                          return QStringLiteral("Other");
     }
     return QString();
 }
@@ -98,7 +117,9 @@ std::optional<Discipline> disciplineFromText(const QString &text)
 
 QList<Discipline> allDisciplines()
 {
-    return { Discipline::Alle, Discipline::ComputerScience, Discipline::Mathematics, Discipline::Physics,
+    return { Discipline::Alle, Discipline::ComputerScience, Discipline::Mathematics,
+             Discipline::Astrophysics, Discipline::CondensedMatterPhysics, Discipline::HighEnergyPhysics,
+             Discipline::QuantumPhysicsAndGravitation, Discipline::MathematicalPhysics, Discipline::GeneralPhysics,
              Discipline::Statistics, Discipline::QuantitativeBiology,
              Discipline::Economics, Discipline::ElectricalEngineering, Discipline::Other };
 }
@@ -114,19 +135,23 @@ Discipline disciplineFromArxivCategory(const QString &arxivCategory)
 
 QUrl buildArxivQueryUrl(Discipline discipline, int maxResults)
 {
-    QStringList kategorieAusdruecke;
-    for (const QString &praefix : searchPrefixes(discipline)) {
-        kategorieAusdruecke.append(QStringLiteral("cat:%1.*").arg(praefix));
+    QStringList categoryExpressions;
+    for (const QString &prefix : searchPrefixes(discipline)) {
+        // No dot before the wildcard: some archives (e.g. "quant-ph", "gr-qc",
+        // "hep-th") have no subcategories on arXiv and contain no dot
+        // themselves. "cat:quant-ph.*" therefore never matched anything --
+        // that is why those disciplines returned no results.
+        categoryExpressions.append(QStringLiteral("cat:%1*").arg(prefix));
     }
 
     QUrlQuery queryParts;
-    queryParts.addQueryItem(QStringLiteral("search_query"), kategorieAusdruecke.join(QStringLiteral(" OR ")));
+    queryParts.addQueryItem(QStringLiteral("search_query"), categoryExpressions.join(QStringLiteral(" OR ")));
     queryParts.addQueryItem(QStringLiteral("sortBy"),      QStringLiteral("submittedDate"));
     queryParts.addQueryItem(QStringLiteral("sortOrder"),   QStringLiteral("descending"));
     queryParts.addQueryItem(QStringLiteral("start"),       QStringLiteral("0"));
     queryParts.addQueryItem(QStringLiteral("max_results"), QString::number(maxResults));
 
-    QUrl url(kApiAddress);
+    QUrl url(kApiAdresse);
     url.setQuery(queryParts);
     return url;
 }

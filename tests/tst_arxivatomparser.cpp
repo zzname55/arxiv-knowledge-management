@@ -101,7 +101,7 @@ void TestArxivAtomParser::parse_ordnetDieDisziplinAusDerHauptkategorieZu()
     QCOMPARE(v.at(0).arxivCategory(), QStringLiteral("cs.LG"));
     QCOMPARE(v.at(0).discipline(), Discipline::ComputerScience);
     QCOMPARE(v.at(1).discipline(), Discipline::Mathematics);
-    QCOMPARE(v.at(2).discipline(), Discipline::Physics);
+    QCOMPARE(v.at(2).discipline(), Discipline::QuantumPhysicsAndGravitation);
 }
 
 void TestArxivAtomParser::parse_baueDieArxivUrl()

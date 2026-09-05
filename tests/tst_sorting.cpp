@@ -119,7 +119,7 @@ void TestSortierung::publications_nachTitelSortieren()
     ansicht.showPublications({
         buildPublication(1, QStringLiteral("Zebra-Verfahren"), Discipline::ComputerScience, QDate(2026, 8, 14)),
         buildPublication(2, QStringLiteral("Ameisen-Algorithmus"), Discipline::Mathematics, QDate(2026, 8, 13)),
-        buildPublication(3, QStringLiteral("Mittlere Arbeit"), Discipline::Physics, QDate(2026, 8, 12))
+        buildPublication(3, QStringLiteral("Mittlere Arbeit"), Discipline::GeneralPhysics, QDate(2026, 8, 12))
     });
 
     auto *tabelle = ansicht.findChild<QTableWidget *>(QStringLiteral("veroeffentlichungTabelle"));
